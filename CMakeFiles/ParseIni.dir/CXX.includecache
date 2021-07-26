@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp
+parseini.h
+/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.h
+iostream
+-
+
+/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.h
+string
+-
+

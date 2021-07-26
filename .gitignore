@@ -1,0 +1,7 @@
+cmake_install.cmake
+cmake-build-debug
+build
+.vscode
+.idea
+.cache
+Testing

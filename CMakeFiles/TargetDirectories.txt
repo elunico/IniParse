@@ -1,0 +1,4 @@
+/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles/rebuild_cache.dir
+/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles/edit_cache.dir
+/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles/parsetest.dir
+/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles/ParseIni.dir
