@@ -48,6 +48,8 @@ struct ini_file {
 
   [[nodiscard]] std::vector<ini_section*> const& get_sections() const;
 
+  friend std::ostream& operator<<(std::ostream&, ini_file const&);
+
   // FIXME: This is actually what fixed the segfault. Deleting all constructors
   // and using the default move constructor?
   // FIXME: add correct constructors for the right methods

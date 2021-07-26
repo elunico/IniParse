@@ -25,9 +25,7 @@ int main() {
   tom::ini_file f = file.parse();
 
   std::cout << f.name << std::endl;
-  for (auto const& a : f.sections) {
-    std::cout << a << ", ";
-  }
+  std::cout << f << std::endl;
 
   return 0;
 }

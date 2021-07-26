@@ -7,6 +7,7 @@
 #include <cctype>
 #include <iostream>
 #include <locale>
+#include <sstream>
 #include <stdexcept>
 
 namespace tom {
@@ -226,11 +227,11 @@ ini_file ini_parser::parse() {
       continue;
     }
 
-    std::cerr << "Content: " << content << std::endl;
-    std::cerr << "Parsing has failed at line: " << current_line_
-              << ", col: " << current_line_pos_ << " (" << current_pos_ << ")"
-              << std::endl;
-    throw std::invalid_argument("The ini file is malformed");
+    std::stringstream s;
+    s << "INI Parsing of " << get_filename()
+      << " has failed at line: " << current_line_
+      << ", col: " << current_line_pos_ << " (" << current_pos_ << ")";
+    throw std::invalid_argument(s.str());
   }
 
   inifile->sections.push_back(current_section_);
@@ -239,22 +240,26 @@ ini_file ini_parser::parse() {
 }
 
 std::ostream& operator<<(std::ostream& os, ini_section const& self) {
-  os << "ini_section(" << self.name
-     << ") [parent: " << (self.parent != nullptr ? self.parent->name : "null")
-     << "]\n\tentries: ";
-  for (const auto& a : self.entries)
-    os << a << ", ";
-
-  os << "|;";
+  os << "[" << self.name << "]\n";
+  for (auto const& entry : self.entries) {
+    os << "\t" << *entry << "\n";
+  }
   return os;
 }
 
 std::ostream& operator<<(std::ostream& os, ini_entry const& self) {
-  os << "ini_entry(" << self.key << "=" << self.value
-     << ") [p: " << (self.parent != nullptr ? self.parent->name : "null")
-     << "]@";
+  os << "\t" << self.key << "=" << self.value;
   return os;
 }
+
+std::ostream& operator<<(std::ostream& os, ini_file const& self) {
+  os << self.name << " (sections: " << self.sections.size() << ")\n";
+  for (auto const& section : self.sections) {
+    os << *section << "\n";
+  }
+  return os;
+}
+
 }  // namespace tom
 
 #endif
