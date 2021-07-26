@@ -20,12 +20,7 @@ std::string readfile(std::string const& filename) {
 }
 
 int main() {
-  std::string text =
-      readfile("/Users/thomaspovinelli/CLionProjects/ParseIni/test/test.ini");
-  std::cout << text << std::endl;
-
-  auto file = tom::ini_parser{
-      "/Users/thomaspovinelli/CLionProjects/ParseIni/test/test.ini"};
+  tom::ini_parser file{"/home/parallels/code/IniParse/test/test.ini"};
 
   tom::ini_file f = file.parse();
 

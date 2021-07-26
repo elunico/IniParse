@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp" "CMakeFiles/ParseIni.dir/parseini.cpp.o" "gcc" "CMakeFiles/ParseIni.dir/parseini.cpp.o.d"
+  "/home/parallels/code/IniParse/parseini.cpp" "CMakeFiles/ParseIni.dir/parseini.cpp.o" "gcc" "CMakeFiles/ParseIni.dir/parseini.cpp.o.d"
   )
 
 # Targets to which this target links.

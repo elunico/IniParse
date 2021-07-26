@@ -44,19 +44,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /usr/local/Cellar/cmake/3.21.0/bin/cmake
+CMAKE_COMMAND = /snap/cmake/912/bin/cmake
 
 # The command to remove a file.
-RM = /usr/local/Cellar/cmake/3.21.0/bin/cmake -E rm -f
+RM = /snap/cmake/912/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/thomaspovinelli/CLionProjects/ParseIni
+CMAKE_SOURCE_DIR = /home/parallels/code/IniParse
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/thomaspovinelli/CLionProjects/ParseIni
+CMAKE_BINARY_DIR = /home/parallels/code/IniParse
 
 # Include any dependencies generated for this target.
 include CMakeFiles/ParseIni.dir/depend.make
@@ -72,16 +72,16 @@ include CMakeFiles/ParseIni.dir/flags.make
 CMakeFiles/ParseIni.dir/parseini.cpp.o: CMakeFiles/ParseIni.dir/flags.make
 CMakeFiles/ParseIni.dir/parseini.cpp.o: parseini.cpp
 CMakeFiles/ParseIni.dir/parseini.cpp.o: CMakeFiles/ParseIni.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ParseIni.dir/parseini.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ParseIni.dir/parseini.cpp.o -MF CMakeFiles/ParseIni.dir/parseini.cpp.o.d -o CMakeFiles/ParseIni.dir/parseini.cpp.o -c /Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/parallels/code/IniParse/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/ParseIni.dir/parseini.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/ParseIni.dir/parseini.cpp.o -MF CMakeFiles/ParseIni.dir/parseini.cpp.o.d -o CMakeFiles/ParseIni.dir/parseini.cpp.o -c /home/parallels/code/IniParse/parseini.cpp
 
 CMakeFiles/ParseIni.dir/parseini.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ParseIni.dir/parseini.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp > CMakeFiles/ParseIni.dir/parseini.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/parallels/code/IniParse/parseini.cpp > CMakeFiles/ParseIni.dir/parseini.cpp.i
 
 CMakeFiles/ParseIni.dir/parseini.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ParseIni.dir/parseini.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp -o CMakeFiles/ParseIni.dir/parseini.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/parallels/code/IniParse/parseini.cpp -o CMakeFiles/ParseIni.dir/parseini.cpp.s
 
 # Object files for target ParseIni
 ParseIni_OBJECTS = \
@@ -93,7 +93,7 @@ ParseIni_EXTERNAL_OBJECTS =
 libParseIni.a: CMakeFiles/ParseIni.dir/parseini.cpp.o
 libParseIni.a: CMakeFiles/ParseIni.dir/build.make
 libParseIni.a: CMakeFiles/ParseIni.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libParseIni.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/parallels/code/IniParse/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libParseIni.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/ParseIni.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ParseIni.dir/link.txt --verbose=$(VERBOSE)
 
@@ -106,6 +106,6 @@ CMakeFiles/ParseIni.dir/clean:
 .PHONY : CMakeFiles/ParseIni.dir/clean
 
 CMakeFiles/ParseIni.dir/depend:
-	cd /Users/thomaspovinelli/CLionProjects/ParseIni && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/thomaspovinelli/CLionProjects/ParseIni /Users/thomaspovinelli/CLionProjects/ParseIni /Users/thomaspovinelli/CLionProjects/ParseIni /Users/thomaspovinelli/CLionProjects/ParseIni /Users/thomaspovinelli/CLionProjects/ParseIni/CMakeFiles/ParseIni.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/parallels/code/IniParse && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/parallels/code/IniParse /home/parallels/code/IniParse /home/parallels/code/IniParse /home/parallels/code/IniParse /home/parallels/code/IniParse/CMakeFiles/ParseIni.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ParseIni.dir/depend
 

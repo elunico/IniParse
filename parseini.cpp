@@ -3,6 +3,7 @@
 
 #include "parseini.h"
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <iostream>
 #include <locale>
@@ -53,55 +54,6 @@ ini_parser::~ini_parser() {
 
 std::string ini_parser::get_filename() const noexcept {
   return filename;
-}
-
-ini_section ini_parser::parse_section(ini_section* parent, std::string& s) {
-  const auto i = s.find_first_of('[');
-  const auto j = s.find_first_of(']');
-
-  if (i == std::string::npos)
-    return ini_section{inifile, parent, ""};
-
-  auto v = s.substr(i + 1, j - 1);
-
-  s.erase(0, j + 1);
-  s.shrink_to_fit();
-
-  return ini_section{inifile, parent, v};
-}
-
-ini_entry ini_parser::parse_entry(ini_section* parent, std::string& s) {
-  using size = std::string::size_type;
-  auto locale = std::locale{};
-
-  size ks = 0;
-  while (std::isspace(s[ks], locale))
-    ks++;
-
-  size ke = ks;
-  while (std::isalnum(s[ke], locale) || std::isspace(s[ke], locale))
-    ke++;
-
-  std::string key = s.substr(ks, ke - ks);
-
-  assert(s[ke] == '=');
-
-  size vs = ke + 1;
-  size ve = vs;
-  while (std::isalnum(s[ve], locale) ||
-         std::isspace(s[ve], locale) && s[ve] != '\n')
-    ve++;
-
-  std::string value = s.substr(vs, ve - vs);
-
-  size eat = ve;
-  while (eat < s.size() && s[eat++] != '\n')
-    ;
-
-  s.erase(0, eat);
-  s.shrink_to_fit();
-
-  return ini_entry{parent, key, value};
 }
 
 void ini_parser::pop_section_() {
