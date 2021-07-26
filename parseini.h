@@ -50,6 +50,7 @@ struct ini_file {
 
   // FIXME: This is actually what fixed the segfault. Deleting all constructors
   // and using the default move constructor?
+  // FIXME: add correct constructors for the right methods
 
   ini_file() = delete;
   ini_file(const ini_file&) = delete;
@@ -62,8 +63,7 @@ struct ini_file {
 };
 
 class ini_parser {
-
-    // conetent fields
+  // conetent fields
   ini_file* inifile;
   std::string filename;
   std::string content;
@@ -90,10 +90,10 @@ class ini_parser {
 
   void drop_to_newline();
 
-  template<typename ch>
-    void increment_pos_counts(ch n);
+  template <typename ch>
+  void increment_pos_counts(ch n);
 
-    ALL_5(ini_parser, delete);
+  ALL_5(ini_parser, delete);
 
  public:
   explicit ini_parser(std::string const& filename);
@@ -103,7 +103,6 @@ class ini_parser {
   [[nodiscard]] std::string const& get_filename() const noexcept;
 
   ~ini_parser();
-
 };
 
 std::ostream& operator<<(std::ostream& os, ini_section const& self);
