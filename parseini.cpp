@@ -84,15 +84,13 @@ ini_file::~ini_file() {
 }
 
 ini_parser::ini_parser(std::string const& filename)
-    : inifile(new ini_file{filename}),
+    : inifile(std::unique_ptr<ini_file>{new ini_file{filename}}),
       filename(filename),
       current_section_(nullptr) {
   content = readfile(filename);
 }
 
-ini_parser::~ini_parser() {
-  delete inifile;
-}
+ini_parser::~ini_parser() {}
 
 std::string const& ini_parser::get_filename() const noexcept {
   return filename;
@@ -146,8 +144,9 @@ ini_section* ini_parser::try_consume_section() {
   std::string name = content.substr(1, n - 1);
   content.erase(0, n + 1);
   content.shrink_to_fit();
-  return new ini_section{inifile, std::weak_ptr<ini_section>{current_section_},
-                         name, std::vector<std::shared_ptr<ini_entry>>{}};
+  return new ini_section{inifile.get(),
+                         std::weak_ptr<ini_section>{current_section_}, name,
+                         std::vector<std::shared_ptr<ini_entry>>{}};
 }
 
 template <typename ch>
@@ -256,7 +255,7 @@ ini_file ini_parser::parse() {
     } else {
       if (current_section_ == nullptr)
         current_section_ = std::make_shared<ini_section>(
-            inifile, std::weak_ptr<ini_section>{},
+            inifile.get(), std::weak_ptr<ini_section>{},
             std::string("<Default Section>"),
             std::vector<std::shared_ptr<ini_entry>>{});
     }

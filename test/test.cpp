@@ -4,6 +4,7 @@
 #include <iostream>
 #include <istream>
 #include <sstream>
+#include <stdexcept>
 #include "../parseini.h"
 
 int main() {

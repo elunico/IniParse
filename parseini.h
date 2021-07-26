@@ -83,7 +83,7 @@ struct ini_file {
 
 class ini_parser {
   // conetent fields
-  ini_file* inifile;
+  std::unique_ptr<ini_file> inifile;
   std::string filename;
   std::string content;
 
