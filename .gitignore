@@ -5,3 +5,4 @@ build
 .idea
 .cache
 Testing
+CMakeFiles/

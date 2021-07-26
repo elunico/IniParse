@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/parsetest.dir/test/test.cpp.o -o parsetest  libParseIni.a 

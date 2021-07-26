@@ -1,4 +1,0 @@
-/home/parallels/code/IniParse/CMakeFiles/edit_cache.dir
-/home/parallels/code/IniParse/CMakeFiles/ParseIni.dir
-/home/parallels/code/IniParse/CMakeFiles/rebuild_cache.dir
-/home/parallels/code/IniParse/CMakeFiles/parsetest.dir

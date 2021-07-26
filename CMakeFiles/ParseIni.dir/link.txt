@@ -1,2 +1,0 @@
-/usr/bin/ar qc libParseIni.a CMakeFiles/ParseIni.dir/parseini.cpp.o
-/usr/bin/ranlib libParseIni.a
