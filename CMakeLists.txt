@@ -4,6 +4,7 @@ project(ParseIni)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "-g -O0")
 add_library(ParseIni parseini.cpp parseini.h)
 
 

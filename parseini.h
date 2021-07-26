@@ -62,37 +62,48 @@ struct ini_file {
 };
 
 class ini_parser {
+
+    // conetent fields
   ini_file* inifile;
   std::string filename;
   std::string content;
 
-  // imple fields
+  // position tracking
+
+  // current line starts at 1 for error message not 0
+  int current_line_ = 1;
+  int current_line_pos_;
+  int current_pos_;
+
+  // implementation fields
   ini_section* current_section_{};
 
   void pop_section_();
 
-  static ini_entry parse_entry(ini_section* parent, std::string& s);
+  void drop_initial_whitespace();
 
-  ini_section parse_section(ini_section* parent, std::string& s);
+  ini_section* try_consume_section();
 
-  void spleef_whitespace();
+  ini_entry* try_consume_entry();
 
-  ini_section* consume_section_optional();
+  int try_consume_comment();
 
-  ini_entry* consume_entry();
+  void drop_to_newline();
 
-  void consume_to_newline();
+  template<typename ch>
+    void increment_pos_counts(ch n);
 
-  ALL_5(ini_parser, delete);
+    ALL_5(ini_parser, delete);
 
  public:
   explicit ini_parser(std::string const& filename);
 
   ini_file parse();
 
-  [[nodiscard]] std::string get_filename() const noexcept;
+  [[nodiscard]] std::string const& get_filename() const noexcept;
 
   ~ini_parser();
+
 };
 
 std::ostream& operator<<(std::ostream& os, ini_section const& self);
