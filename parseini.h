@@ -25,13 +25,26 @@ struct ini_file;
 
 struct ini_section {
   ini_file* owner;
-  ini_section* parent;
+  std::weak_ptr<ini_section> parent;
   std::string name;
-  std::vector<ini_entry*> entries;
+  std::vector<std::shared_ptr<ini_entry>> entries;
+
+  std::shared_ptr<ini_entry> get_entry(std::string const& key);
+
+  // returns a pair of <value, present>
+  // If the key is present, then the second element is true
+  // If the key is not present, then value == "" and present == false
+  std::pair<std::string, bool> get_value(std::string const& key);
 
   ~ini_section();
 
-  ALL_5(ini_section, delete);
+  // ALL_5(ini_section, delete);
+
+  ini_section(ini_file* owner,
+              std::weak_ptr<ini_section> parent,
+              std::string name,
+              std::vector<std::shared_ptr<ini_entry>> entries)
+      : owner(owner), parent(parent), name(name), entries(entries) {}
 };
 
 struct ini_entry {
@@ -44,9 +57,13 @@ struct ini_entry {
 
 struct ini_file {
   std::string name;
-  std::vector<ini_section*> sections;
+  std::vector<std::shared_ptr<ini_section>> sections;
 
-  [[nodiscard]] std::vector<ini_section*> const& get_sections() const;
+  [[nodiscard]] std::vector<std::shared_ptr<ini_section>> const& get_sections()
+      const;
+
+  std::shared_ptr<ini_section> get_section(std::string const& name);
+  std::shared_ptr<ini_entry> get_entry(std::string const& key);
 
   friend std::ostream& operator<<(std::ostream&, ini_file const&);
 
@@ -78,7 +95,7 @@ class ini_parser {
   int current_pos_ = 0;
 
   // implementation fields
-  ini_section* current_section_{};
+  std::shared_ptr<ini_section> current_section_{};
 
   void pop_section_();
 
@@ -88,7 +105,7 @@ class ini_parser {
 
   ini_entry* try_consume_entry();
 
-  int try_consume_comment();
+  bool try_consume_comment();
 
   void drop_to_newline();
 
