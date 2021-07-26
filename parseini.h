@@ -74,8 +74,8 @@ class ini_parser {
 
   // current line starts at 1 for error message not 0
   int current_line_ = 1;
-  int current_line_pos_;
-  int current_pos_;
+  int current_line_pos_ = 0;
+  int current_pos_ = 0;
 
   // implementation fields
   ini_section* current_section_{};

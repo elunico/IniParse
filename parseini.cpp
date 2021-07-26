@@ -110,19 +110,24 @@ ini_section* ini_parser::try_consume_section() {
 }
 
 template <typename ch>
-int is_not_comment_char(ch c) {
-  return c != static_cast<ch>(';') && c != static_cast<ch>('#');
+int is_comment_char(ch c) {
+  return c == static_cast<ch>(';') || c == static_cast<ch>('#');
 }
 
 template <typename ch>
-int is_entry_identifier_char(ch c) {
-  return is_not_comment_char(c) && c != '\n' && c != '=';
+int is_value_identifier_char(ch c) {
+  return !is_comment_char(c) && c != '\n';
+}
+
+template <typename ch>
+int is_key_identifier_char(ch c) {
+  return !is_comment_char(c) && c != '\n' && c != '=';
 }
 
 int ini_parser::try_consume_comment() {
   drop_initial_whitespace();
   // spleef whitespace will erase all the leading whitespace
-  if (is_not_comment_char(content[0]))
+  if (!is_comment_char(content[0]))
     return 0;
 
   std::string::size_type n = 0;
@@ -144,14 +149,15 @@ ini_entry* ini_parser::try_consume_entry() {
   size ks = 0;
   // drop initial whitespace
   // might need to be removed as ini is pretty whitespace sensitive
-  while (std::isspace(s[ks], locale)) {
-    increment_pos_counts(s[ks]);
-    ks++;
-  }
+  // all whitepsace in a key is preserved.
+  //  while (std::isspace(s[ks], locale)) {
+  //    increment_pos_counts(s[ks]);
+  //    ks++;
+  //  }
 
   size ke = ks;
   // after dropping initial whitespace, consume all valid key chars
-  while (is_entry_identifier_char(s[ke])) {
+  while (is_key_identifier_char(s[ke])) {
     increment_pos_counts(content[ke]);
     ke++;
   }
@@ -166,7 +172,7 @@ ini_entry* ini_parser::try_consume_entry() {
   // repeat the process for the value, but do not drop initial whitespace
   size vs = ke + 1;
   size ve = vs;
-  while (is_entry_identifier_char(s[ve])) {
+  while (is_value_identifier_char(s[ve])) {
     increment_pos_counts(s[ve]);
     ve++;
   }
