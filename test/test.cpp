@@ -20,7 +20,7 @@ std::string readfile(std::string const& filename) {
 }
 
 int main() {
-  tom::ini_parser file{"/home/parallels/code/IniParse/test/test.ini"};
+  tom::ini_parser file{"test/test.ini"};
 
   tom::ini_file f = file.parse();
 
