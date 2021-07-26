@@ -6,3 +6,7 @@ build
 .cache
 Testing
 CMakeFiles/
+CMakeCache.txt
+libParseIni.a
+parsetest
+Makefile
