@@ -38,8 +38,6 @@ struct ini_section {
 
   ~ini_section();
 
-  // ALL_5(ini_section, delete);
-
   ini_section(ini_file* owner,
               std::weak_ptr<ini_section> parent,
               std::string name,
@@ -51,6 +49,53 @@ struct ini_entry {
   ini_section* parent;
   std::string key;
   std::string value;
+
+  template <typename T, typename AdapterFunc>
+  T adapt_value(AdapterFunc adapter) const {
+    return adapter(value);
+  }
+
+  constexpr static auto const int_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    int x = 0;
+    geek >> x;
+    return x;
+  };
+
+  constexpr static auto const long_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    long x = 0l;
+    geek >> x;
+    return x;
+  };
+
+  constexpr static auto const double_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    double x = 0.0;
+    geek >> x;
+    return x;
+  };
+
+  constexpr static auto const bool_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    bool x = false;
+    geek >> x;
+    return x;
+  };
+
+  constexpr static auto const unsigned_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    unsigned x = 0u;
+    geek >> x;
+    return x;
+  };
+
+  constexpr static auto const unsigned_long_adapter = [](std::string value) {
+    std::stringstream geek(value);
+    unsigned long x = 0UL;
+    geek >> x;
+    return x;
+  };
 
   ALL_5(ini_entry, delete);
 };
@@ -97,17 +142,32 @@ class ini_parser {
   // implementation fields
   std::shared_ptr<ini_section> current_section_{};
 
+  // sets the current section to the current section's parent if it exists
   void pop_section_();
 
-  void drop_initial_whitespace();
+  // removes all initial whitespace from the string until the first non-space
+  // char returns the number of chars removed
+  std::string::size_type drop_initial_whitespace();
 
+  // trys to parse out a section in the ini file. If it cannot it returns
+  // nullptr otherwise it returns a freshly new'd section
+  // this method does not change the whitespace, and a \n will still be present
+  // after it runs
   ini_section* try_consume_section();
 
+  // trys to parse out a entry in the ini file. If it cannot it returns nullptr
+  // otherwise it returns a freshly new'd entry
+  // this method does not change the whitespace, and a \n will still be present
+  // after it runs
   ini_entry* try_consume_entry();
 
+  // trys to parse out a comment in the ini file. If it cannot it returns
+  // false otherwise if it does it returns true
   bool try_consume_comment();
 
-  void drop_to_newline();
+  // erases all whitespace until and including the next \n char, and returns the
+  // count of chars removed
+  std::string::size_type drop_to_newline();
 
   template <typename ch>
   void increment_pos_counts(ch n);

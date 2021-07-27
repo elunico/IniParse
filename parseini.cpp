@@ -101,7 +101,7 @@ void ini_parser::pop_section_() {
     current_section_ = current_section_->parent.lock();
 }
 
-void ini_parser::drop_initial_whitespace() {
+std::string::size_type ini_parser::drop_initial_whitespace() {
   std::string::size_type n = 0;
   const std::locale& locale = std::locale{};
   while (std::isspace(content[n], locale)) {
@@ -110,6 +110,7 @@ void ini_parser::drop_initial_whitespace() {
   }
   content.erase(0, n);
   content.shrink_to_fit();
+  return n;
 }
 
 template <typename ch>
@@ -121,7 +122,7 @@ void ini_parser::increment_pos_counts(ch c) {
   }
 }
 
-void ini_parser::drop_to_newline() {
+std::string::size_type ini_parser::drop_to_newline() {
   std::string::size_type n = 0;
   while (std::isspace(content[n], std::locale{})) {
     increment_pos_counts(content[n]);
@@ -129,6 +130,7 @@ void ini_parser::drop_to_newline() {
   }
   content.erase(0, n);
   content.shrink_to_fit();
+  return n;
 }
 
 ini_section* ini_parser::try_consume_section() {
@@ -168,7 +170,7 @@ bool ini_parser::try_consume_comment() {
   drop_initial_whitespace();
   // spleef whitespace will erase all the leading whitespace
   if (!is_comment_char(content[0]))
-    return 0;
+    return false;
 
   std::string::size_type n = 0;
   while (content[n] != '\n') {
@@ -178,7 +180,7 @@ bool ini_parser::try_consume_comment() {
 
   content.erase(0, n);
   content.shrink_to_fit();
-  return 1;
+  return true;
 }
 
 ini_entry* ini_parser::try_consume_entry() {
@@ -218,8 +220,8 @@ ini_entry* ini_parser::try_consume_entry() {
   }
 
   // two equal signs in a line is bad
-  if (s[ve] == '=')
-    return nullptr;
+//  if (s[ve] == '=')
+//    return nullptr;
 
   std::string value = s.substr(vs, ve - vs);
 
