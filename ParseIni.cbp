@@ -37,6 +37,34 @@
 					<DistClean command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="parsetest">
+				<Option output="/Users/thomaspovinelli/CLionProjects/ParseIni/parsetest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/thomaspovinelli/CLionProjects/ParseIni"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 parsetest"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="parsetest/fast">
+				<Option output="/Users/thomaspovinelli/CLionProjects/ParseIni/parsetest" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/thomaspovinelli/CLionProjects/ParseIni"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 parsetest/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/Users/thomaspovinelli/CLionProjects/ParseIni/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="ParseIni">
 				<Option output="/Users/thomaspovinelli/CLionProjects/ParseIni/libParseIni.a" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/Users/thomaspovinelli/CLionProjects/ParseIni"/>
@@ -70,7 +98,11 @@
 			<Option target="ParseIni"/>
 		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.h">
+			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/test/test.cpp">
+			<Option target="parsetest"/>
 		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>

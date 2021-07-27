@@ -29,28 +29,22 @@ static std::string readfile(std::string const& filename) {
 }
 
 std::shared_ptr<ini_entry> ini_section::get_entry(std::string const& key) {
-  for (auto& entry : entries) {
-    if (entry->key == key) {
+  for (auto& entry : entries)
+    if (entry->key == key)
       return entry;
-    }
-  }
+
   return nullptr;
 }
 
 std::pair<std::string, bool> ini_section::get_value(std::string const& key) {
-  for (auto& entry : entries) {
-    if (entry->key == key) {
+  for (auto& entry : entries)
+    if (entry->key == key)
       return std::pair<std::string, bool>{entry->value, true};
-    }
-  }
+
   return std::pair<std::string, bool>{"", false};
 }
 
-ini_section::~ini_section() {
-  // for (auto& v : entries)
-  //   delete v;
-  // entries.clear();
-}
+ini_section::~ini_section() = default;
 
 std::vector<std::shared_ptr<ini_section>> const& ini_file::get_sections()
     const {
@@ -58,39 +52,32 @@ std::vector<std::shared_ptr<ini_section>> const& ini_file::get_sections()
 }
 
 std::shared_ptr<ini_entry> ini_file::get_entry(std::string const& key) {
-  for (auto& section : sections) {
-    for (auto& entry : section->entries) {
-      if (entry->key == key) {
+  for (auto& section : sections)
+    for (auto& entry : section->entries)
+      if (entry->key == key)
         return entry;
-      }
-    }
-  }
+
   return nullptr;
 }
 
 std::shared_ptr<ini_section> ini_file::get_section(std::string const& name) {
-  for (auto& section : sections) {
-    if (section->name == name) {
+  for (auto& section : sections)
+    if (section->name == name)
       return section;
-    }
-  }
+
   return nullptr;
 }
 
-ini_file::~ini_file() {
-  // for (auto& v : sections)
-  //   delete v;
-  // sections.clear();
-}
+ini_file::~ini_file() = default;
 
 ini_parser::ini_parser(std::string const& filename)
-    : inifile(std::unique_ptr<ini_file>{new ini_file{filename}}),
+    : inifile(std::make_unique<ini_file>(filename)),
       filename(filename),
       current_section_(nullptr) {
   content = readfile(filename);
 }
 
-ini_parser::~ini_parser() {}
+ini_parser::~ini_parser() = default;
 
 std::string const& ini_parser::get_filename() const noexcept {
   return filename;
@@ -133,10 +120,10 @@ std::string::size_type ini_parser::drop_to_newline() {
   return n;
 }
 
-ini_section* ini_parser::try_consume_section() {
-  if (content[0] != '[') {
+std::shared_ptr<ini_section> ini_parser::try_consume_section() {
+  if (content[0] != '[')
     return nullptr;
-  }
+
   std::string::size_type n = 0;
   while (content[n] != ']') {
     increment_pos_counts(content[n]);
@@ -146,9 +133,10 @@ ini_section* ini_parser::try_consume_section() {
   std::string name = content.substr(1, n - 1);
   content.erase(0, n + 1);
   content.shrink_to_fit();
-  return new ini_section{inifile.get(),
-                         std::weak_ptr<ini_section>{current_section_}, name,
-                         std::vector<std::shared_ptr<ini_entry>>{}};
+  return std::make_shared<ini_section>(
+      std::weak_ptr<ini_file>{inifile},
+      std::weak_ptr<ini_section>{current_section_}, name,
+      std::vector<std::shared_ptr<ini_entry>>{});
 }
 
 template <typename ch>
@@ -183,7 +171,7 @@ bool ini_parser::try_consume_comment() {
   return true;
 }
 
-ini_entry* ini_parser::try_consume_entry() {
+std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
   auto& s = content;
   using size = std::string::size_type;
   auto locale = std::locale{};
@@ -220,8 +208,8 @@ ini_entry* ini_parser::try_consume_entry() {
   }
 
   // two equal signs in a line is bad
-//  if (s[ve] == '=')
-//    return nullptr;
+  //  if (s[ve] == '=')
+  //    return nullptr;
 
   std::string value = s.substr(vs, ve - vs);
 
@@ -234,7 +222,8 @@ ini_entry* ini_parser::try_consume_entry() {
 
   s.erase(0, eat);
   s.shrink_to_fit();
-  return new ini_entry{current_section_.get(), key, value};
+  return std::make_shared<ini_entry>(
+      std::weak_ptr<ini_section>{current_section_}, key, value);
 }
 
 ini_file ini_parser::parse() {
@@ -257,7 +246,7 @@ ini_file ini_parser::parse() {
     } else {
       if (current_section_ == nullptr)
         current_section_ = std::make_shared<ini_section>(
-            inifile.get(), std::weak_ptr<ini_section>{},
+            std::weak_ptr<ini_file>{inifile}, std::weak_ptr<ini_section>{},
             std::string("<Default Section>"),
             std::vector<std::shared_ptr<ini_entry>>{});
     }

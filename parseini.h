@@ -24,7 +24,7 @@ struct ini_entry;
 struct ini_file;
 
 struct ini_section {
-  ini_file* owner;
+  std::weak_ptr<ini_file> owner;
   std::weak_ptr<ini_section> parent;
   std::string name;
   std::vector<std::shared_ptr<ini_entry>> entries;
@@ -38,7 +38,7 @@ struct ini_section {
 
   ~ini_section();
 
-  ini_section(ini_file* owner,
+  ini_section(std::weak_ptr<ini_file> owner,
               std::weak_ptr<ini_section> parent,
               std::string name,
               std::vector<std::shared_ptr<ini_entry>> entries)
@@ -46,9 +46,11 @@ struct ini_section {
 };
 
 struct ini_entry {
-  ini_section* parent;
+  std::weak_ptr<ini_section> parent;
   std::string key;
   std::string value;
+
+  ini_entry(std::weak_ptr<ini_section> parent, std::string key, std::string value): parent(parent), key(key), value(value) {}
 
   template <typename T, typename AdapterFunc>
   T adapt_value(AdapterFunc adapter) const {
@@ -112,9 +114,9 @@ struct ini_file {
 
   friend std::ostream& operator<<(std::ostream&, ini_file const&);
 
-  // FIXME: This is actually what fixed the segfault. Deleting all constructors
-  // and using the default move constructor?
-  // FIXME: add correct constructors for the right methods
+  ini_file(std::string const& name_) : name(name_), sections(std::vector<std::shared_ptr<ini_section>>{}) {
+
+  }
 
   ini_file() = delete;
   ini_file(const ini_file&) = delete;
@@ -128,7 +130,7 @@ struct ini_file {
 
 class ini_parser {
   // conetent fields
-  std::unique_ptr<ini_file> inifile;
+  std::shared_ptr<ini_file> inifile;
   std::string filename;
   std::string content;
 
@@ -153,13 +155,13 @@ class ini_parser {
   // nullptr otherwise it returns a freshly new'd section
   // this method does not change the whitespace, and a \n will still be present
   // after it runs
-  ini_section* try_consume_section();
+  std::shared_ptr<ini_section> try_consume_section();
 
   // trys to parse out a entry in the ini file. If it cannot it returns nullptr
   // otherwise it returns a freshly new'd entry
   // this method does not change the whitespace, and a \n will still be present
   // after it runs
-  ini_entry* try_consume_entry();
+  std::shared_ptr<ini_entry> try_consume_entry();
 
   // trys to parse out a comment in the ini file. If it cannot it returns
   // false otherwise if it does it returns true

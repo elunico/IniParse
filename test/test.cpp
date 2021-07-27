@@ -33,10 +33,10 @@ int main() {
   auto entry = f.get_entry("PrimaryIP");
   assert(entry->key == "PrimaryIP");
   assert(entry->value == "192.168.0.13");
-  assert(entry->parent->name == "BACKUP_SERVERS");
+  assert(entry->parent.lock()->name == "BACKUP_SERVERS");
 
   std::cout << "Setting \"" << entry->key << "\" has value \"" << entry->value
-            << "\" in section \"" << entry->parent->name << "\"\n";
+            << "\" in section \"" << entry->parent.lock()->name << "\"\n";
 
   return 0;
 }
