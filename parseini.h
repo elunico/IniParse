@@ -54,8 +54,8 @@ public:
     ~ini_section();
 
     ini_section(
-            std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name,
-            std::vector<std::shared_ptr<ini_entry>> entries
+        std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name,
+        std::vector<std::shared_ptr<ini_entry>> entries
     ) : owner(owner), parent(parent), name(name), entries_(entries) { }
 
 };
@@ -68,8 +68,8 @@ private:
 public:
     std::weak_ptr<ini_section> parent;
 
-    ini_entry(std::weak_ptr<ini_section> parent, std::string key, std::string value) : parent(parent), key_(key),
-                                                                                       value_(value) { }
+    ini_entry(std::weak_ptr<ini_section> parent, std::string key, std::string value) :
+        parent(parent), key_(key), value_(value) { }
 
     std::string const& key() const noexcept;
 
@@ -139,7 +139,7 @@ public:
 
     std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
 
-    bool add_section(std::string const& section_name);
+    bool add_section(const std::string& section_name, std::string* parent_name);
 
     bool add_section(std::shared_ptr<ini_section> section);
 
@@ -160,8 +160,6 @@ public:
     ini_file& operator =(ini_file&&) = delete;
 
     ~ini_file();
-
-    bool add_section(const std::string& section_name, std::string* parent_name);
 };
 
 class ini_parser {

@@ -94,8 +94,8 @@ std::shared_ptr<ini_section> ini_file::get_section(std::string const& name) cons
 
 ini_file::~ini_file() = default;
 
-ini_parser::ini_parser(std::string const& filename) : inifile(std::make_unique<ini_file>(filename)), filename(filename),
-                                                      current_section_(nullptr) {
+ini_parser::ini_parser(std::string const& filename) :
+    inifile(std::make_unique<ini_file>(filename)), filename(filename), current_section_(nullptr) {
     content = readfile(filename);
 }
 
