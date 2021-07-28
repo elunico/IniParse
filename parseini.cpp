@@ -7,7 +7,9 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <utility>
 #include <vector>
+#include <iostream>
 
 namespace tom {
 static std::string readfile(std::string const& filename) {
@@ -94,11 +96,6 @@ std::shared_ptr<ini_section> ini_file::get_section(std::string const& name) cons
 
 ini_file::~ini_file() = default;
 
-ini_parser::ini_parser(std::string const& filename) :
-    inifile(std::make_unique<ini_file>(filename)), filename(filename), current_section_(nullptr) {
-    content = readfile(filename);
-}
-
 ini_parser::~ini_parser() = default;
 
 std::string const& ini_parser::get_filename() const noexcept {
@@ -156,23 +153,21 @@ std::shared_ptr<ini_section> ini_parser::try_consume_section() {
     content.erase(0, n + 1);
     content.shrink_to_fit();
     return std::make_shared<ini_section>(std::weak_ptr<ini_file>{ inifile },
-                                         std::weak_ptr<ini_section>{ current_section_ }, name,
+                                         std::weak_ptr<ini_section>{ current_section_ },
+                                         name,
                                          std::vector<std::shared_ptr<ini_entry>>{ });
 }
 
-template <typename ch>
-int is_comment_char(ch c) {
-    return c == static_cast<ch>(';') || c == static_cast<ch>('#');
+bool ini_parser::is_comment_char(char chr) const noexcept {
+    return std::any_of(begin(comment_chars), end(comment_chars), [chr](auto c) { return c == chr; });
 }
 
-template <typename ch>
-int is_value_identifier_char(ch c) {
-    return !is_comment_char(c) && c != '\n';
+bool ini_parser::is_value_identifier_char(char c) const noexcept {
+    return !is_comment_char(c) && c != line_separator;
 }
 
-template <typename ch>
-int is_key_identifier_char(ch c) {
-    return !is_comment_char(c) && c != '\n' && c != '=';
+bool ini_parser::is_key_identifier_char(char c) const noexcept {
+    return !is_comment_char(c) && c != line_separator && c != '=';
 }
 
 bool ini_parser::try_consume_comment() {
@@ -299,9 +294,9 @@ ini_file ini_parser::parse() {
 
 std::ostream& operator <<(std::ostream& os, ini_section const& self) {
     os << "[" << self.name << "]\n";
-    for (auto const& entry : self.entries()) {
+    for (auto const& entry : self.entries())
         os << "\t" << *entry << "\n";
-    }
+
     return os;
 }
 
@@ -312,9 +307,9 @@ std::ostream& operator <<(std::ostream& os, ini_entry const& self) {
 
 std::ostream& operator <<(std::ostream& os, ini_file const& self) {
     os << self.name << " (sections: " << self.sections.size() << ")\n";
-    for (auto const& section : self.sections) {
+    for (auto const& section : self.sections)
         os << *section << "\n";
-    }
+
     return os;
 }
 
@@ -328,7 +323,9 @@ std::string const& ini_entry::value() const noexcept {
 
 bool ini_file::add_section(std::string const& section_name, std::string* parent_name = nullptr) {
     auto const& parent = parent_name != nullptr ? get_section(*parent_name) : std::weak_ptr<ini_section>{ };
-    std::shared_ptr<ini_section> section = std::make_shared<ini_section>(this->weak_from_this(), parent, section_name,
+    std::shared_ptr<ini_section> section = std::make_shared<ini_section>(this->weak_from_this(),
+                                                                         parent,
+                                                                         section_name,
                                                                          std::vector<std::shared_ptr<ini_entry>>{ });
     return add_section(section);
 }
@@ -338,7 +335,16 @@ bool ini_file::add_section(std::shared_ptr<ini_section> section) {
     smap[section->name] = section;
     sections.push_back(section);
     return exists;
+}
 
+ini_parser::ini_parser(
+    std::string filename, std::vector<char> comment_chars, char line_separator
+) :
+    inifile(std::make_unique<ini_file>(filename)),
+    filename(std::move(filename)),
+    comment_chars(std::move(comment_chars)),
+    line_separator(line_separator) {
+    content = readfile(this->filename);
 }
 
 }  // namespace tom

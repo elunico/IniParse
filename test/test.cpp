@@ -40,5 +40,7 @@ int main() {
     std::cout << "Setting " << quote(entry->key()) << " has value() " << quote(entry->value()) << " in section "
               << quote(entry->parent.lock()->name) << "\n";
 
+    std::cout << "Value = " << port->adapt_value<int>() << std::endl;
+
     return 0;
 }

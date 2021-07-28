@@ -54,7 +54,9 @@ public:
     ~ini_section();
 
     ini_section(
-        std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name,
+        std::weak_ptr<ini_file> owner,
+        std::weak_ptr<ini_section> parent,
+        std::string name,
         std::vector<std::shared_ptr<ini_entry>> entries
     ) : owner(owner), parent(parent), name(name), entries_(entries) { }
 
@@ -75,52 +77,22 @@ public:
 
     std::string const& value() const noexcept;
 
-    template <typename T, typename AdapterFunc>
-    T adapt_value(AdapterFunc adapter) const {
+    template <typename T>
+    struct adapt_to {
+        static_assert(std::is_default_constructible<T>::value, "Can only adapt to default constructable types");
+
+        T operator ()(std::string const& value) {
+            std::stringstream geek(value);
+            T                 x;
+            geek >> x;
+            return x;
+        }
+    };
+
+    template <typename T, typename AdapterFunc = adapt_to<T> >
+    T adapt_value(AdapterFunc adapter = adapt_to<T>{ }) const {
         return adapter(value_);
     }
-
-    constexpr static auto const int_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        int               x = 0;
-        geek >> x;
-        return x;
-    };
-
-    constexpr static auto const long_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        long              x = 0l;
-        geek >> x;
-        return x;
-    };
-
-    constexpr static auto const double_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        double            x = 0.0;
-        geek >> x;
-        return x;
-    };
-
-    constexpr static auto const bool_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        bool              x = false;
-        geek >> x;
-        return x;
-    };
-
-    constexpr static auto const unsigned_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        unsigned          x = 0u;
-        geek >> x;
-        return x;
-    };
-
-    constexpr static auto const unsigned_long_adapter = [](std::string value) {
-        std::stringstream geek(value);
-        unsigned long     x = 0UL;
-        geek >> x;
-        return x;
-    };
 
     ALL_5(ini_entry, delete);
 };
@@ -168,6 +140,10 @@ class ini_parser {
     std::string               filename;
     std::string               content;
 
+    // parameterized fields
+    std::vector<char> comment_chars  = { '#', ';' };
+    char              line_separator = '\n';
+
     // position tracking
 
     // current line starts at 1 for error message not 0
@@ -212,8 +188,15 @@ class ini_parser {
     // delete all implicit constructors / operators ALL_5(ini_parser, delete);
 
 public:
-    // create 1 constructor for filename
-    explicit ini_parser(std::string const& filename);
+    bool is_comment_char(char chr) const noexcept;
+
+    bool is_value_identifier_char(char c) const noexcept;
+
+    bool is_key_identifier_char(char c) const noexcept;
+
+    ini_parser(
+        std::string filename, std::vector<char> comment_chars = { '#', ';' }, char line_separator = '\n'
+    );
 
     // the main method the user of this class will call. Takes the content of the file and parses it into the ini_file data structure
     ini_file parse();
