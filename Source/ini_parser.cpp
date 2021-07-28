@@ -1,100 +1,10 @@
-#ifndef PARSEINI_H
-#define PARSEINI_H
+//
+// Created by Thomas Povinelli on 7/28/21.
+//
 
-#include "parseini.h"
-#include <algorithm>
-#include <cassert>
-#include <memory>
-#include <sstream>
-#include <stdexcept>
-#include <utility>
-#include <vector>
-#include <iostream>
+#include "ini_parser.h"
 
 namespace tom {
-static std::string readfile(std::string const& filename) {
-    std::string       line;
-    std::ifstream     myfile(filename);
-    std::stringstream text{ };
-    if (myfile.is_open()) {
-        while (getline(myfile, line))
-            text << line << '\n';
-
-        myfile.close();
-    } else {
-        abort();
-    }
-    return text.str();
-}
-
-std::shared_ptr<ini_entry> ini_section::get_entry(std::string const& key) const {
-    for (auto& entry : entries())
-        if (entry->key() == key)
-            return entry;
-
-    return nullptr;
-}
-
-std::pair<std::string, bool> ini_section::get_value(std::string const& key) const {
-    for (auto& entry : entries())
-        if (entry->key() == key)
-            return std::pair<std::string, bool>{ entry->value(), true };
-
-    return std::pair<std::string, bool>{ "", false };
-}
-
-bool ini_section::add_entry(std::string const& key, std::string const& value) {
-    auto entry = std::make_shared<ini_entry>(this->weak_from_this(), key, value);
-    return add_entry(entry);
-}
-
-bool ini_section::add_entry(std::shared_ptr<ini_entry> const& entry) {
-    auto const& key = entry->key();
-    auto result = false;
-    if (emap.find(key) != emap.end())
-        result = true;
-
-    emap[key] = entry;
-    entries_.push_back(entry);
-    return result;
-}
-
-bool ini_section::remove_entry(const std::string& key) {
-    bool v = (std::remove_if(std::begin(entries_), std::end(entries_), [key](std::shared_ptr<ini_entry> a) {
-        return a->key() == key;
-    }) != std::end(entries_));
-    v &= (emap.erase(key) >= 1);
-    return v;
-}
-
-std::vector<std::shared_ptr<ini_entry>> const& ini_section::entries() const noexcept {
-    return entries_;
-}
-
-ini_section::~ini_section() = default;
-
-std::vector<std::shared_ptr<ini_section>> const& ini_file::get_sections() const {
-    return sections;
-}
-
-std::shared_ptr<ini_entry> ini_file::get_entry(std::string const& key) const {
-    for (auto& section : sections)
-        for (auto& entry : section->entries())
-            if (entry->key() == key)
-                return entry;
-
-    return nullptr;
-}
-
-std::shared_ptr<ini_section> ini_file::get_section(std::string const& name) const {
-    for (auto& section : sections)
-        if (section->name == name)
-            return section;
-
-    return nullptr;
-}
-
-ini_file::~ini_file() = default;
 
 ini_parser::~ini_parser() = default;
 
@@ -292,51 +202,6 @@ ini_file ini_parser::parse() {
     return std::move(*inifile);
 }
 
-std::ostream& operator <<(std::ostream& os, ini_section const& self) {
-    os << "[" << self.name << "]\n";
-    for (auto const& entry : self.entries())
-        os << "\t" << *entry << "\n";
-
-    return os;
-}
-
-std::ostream& operator <<(std::ostream& os, ini_entry const& self) {
-    os << "\t" << self.key() << "=" << self.value();
-    return os;
-}
-
-std::ostream& operator <<(std::ostream& os, ini_file const& self) {
-    os << self.name << " (sections: " << self.sections.size() << ")\n";
-    for (auto const& section : self.sections)
-        os << *section << "\n";
-
-    return os;
-}
-
-std::string const& ini_entry::key() const noexcept {
-    return key_;
-}
-
-std::string const& ini_entry::value() const noexcept {
-    return value_;
-}
-
-bool ini_file::add_section(std::string const& section_name, std::string* parent_name = nullptr) {
-    auto const& parent = parent_name != nullptr ? get_section(*parent_name) : std::weak_ptr<ini_section>{ };
-    std::shared_ptr<ini_section> section = std::make_shared<ini_section>(this->weak_from_this(),
-                                                                         parent,
-                                                                         section_name,
-                                                                         std::vector<std::shared_ptr<ini_entry>>{ });
-    return add_section(section);
-}
-
-bool ini_file::add_section(std::shared_ptr<ini_section> section) {
-    auto exists = smap.find(section->name) != smap.end();
-    smap[section->name] = section;
-    sections.push_back(section);
-    return exists;
-}
-
 ini_parser::ini_parser(
     std::string filename, std::vector<char> comment_chars, char line_separator
 ) :
@@ -347,6 +212,4 @@ ini_parser::ini_parser(
     content = readfile(this->filename);
 }
 
-}  // namespace tom
-
-#endif
+}

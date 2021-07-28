@@ -94,10 +94,43 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.cpp">
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_entry.cpp">
+			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
 		</Unit>
-		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/parseini.h">
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_entry.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_file.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_file.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_parser.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_parser.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_section.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_section.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/utils.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/utils.h">
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
 		</Unit>

@@ -3,7 +3,11 @@
 #include <iostream>
 #include <istream>
 #include <stdexcept>
-#include "../parseini.h"
+#include "../Source/utils.h"
+#include "../Source/ini_entry.h"
+#include "../Source/ini_parser.h"
+#include "../Source/ini_file.h"
+#include "../Source/ini_parser.h"
 
 namespace {
 inline std::string quote(std::string const& s) {
