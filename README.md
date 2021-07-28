@@ -6,22 +6,22 @@ This implements a simple (and specific) `.ini` file parser in C++.
 
 ### Entries
 Entries are the most basic part of the `.ini.` file. They consist
-of a **key** and a **value** separated by an equal sign. 
-There are limitations on what characters can be present in a key or value. 
+of a **key_** and a **value_** separated by an equal sign. 
+There are limitations on what characters can be present in a key_ or value_. 
 
 Rules for keys:
   1.  keys cannot contain `=`, `\n`, `#` or `;`
   2.  keys cannot **start with** `[`
-  3.  all whitespace in a key (that is not `\n` since `\n` is 
-      invalid in a key) is considered a part of the key
-  4.  keys end at the equal sign delimintating the value. The
-      equal sign is not a part of either the key or value, as 
+  3.  all whitespace in a key_ (that is not `\n` since `\n` is 
+      invalid in a key_) is considered a part of the key_
+  4.  keys end at the equal sign delimintating the value_. The
+      equal sign is not a part of either the key_ or value_, as 
       it is a deliminator
       
 Rules for values:
   1.  Values cannot contain `\n`, `#` or `;`
-  2.  all whitespace in a value (that is not `\n` since `\n` is
-      invalid in a value) is considered a part of the value
+  2.  all whitespace in a value_ (that is not `\n` since `\n` is
+      invalid in a value_) is considered a part of the value_
   3.  values end at the `\n` character or `#` or `;` indicating 
       the start of a line comment 
       
