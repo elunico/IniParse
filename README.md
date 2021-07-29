@@ -40,7 +40,7 @@ strings. That being said, there is the `T tom::ini_entry::adapt_value<T, Adapter
 method on `tom::ini_entry`. This method is templated on the type to convert the value to, T, and the function object that performs the conversion, AdapterFunc.
 AdapterFunc can be any type including a lambda so long as it implements `T operator()(std::string s);`.
 
-The `tom::ini_entry` class defines an inner struct called `tom::ini_entry::adapter<T>` which provides some 
+The `tom::ini_entry` class defines an inner struct called `tom::ini_entry::adapt_to<T>` which provides some 
 basic default conversions using `std::stringstream`s. This is the default argument provided to the method and does not 
 need to be invoked explicitly. Implementing `std::stringstream& operator<<(std::stringstream& s, T const& t)` on 
 your types can allow them to be converted from strings directly using the struct and default argument
@@ -56,12 +56,12 @@ They must precede the entries, they contain.
 There is no way to end a section syntactically. All entries
 under a section start are considered a part of that section. 
 The section ends **only** when the next one begins. As a 
-consequence, only enties that appear in the file at the 
+consequence, only entries that appear in the file at the 
 beginning before the first section can be outside of a section.
 
 ### Comments 
 All comments are line comments. They go from the comment 
-start indicator to the end of the line (specifically `\n`) 
+start indicator to the end of the line (specifically the line terminator) 
 character.
 
 Line comments are indicated using either `#` or `;` by default, but 
