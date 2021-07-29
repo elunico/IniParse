@@ -46,5 +46,19 @@ int main() {
 
     std::cout << "Value = " << port->adapt_value<int>() << std::endl;
 
+    // create new values
+
+    f.add_section("IniParse Defined Section", nullptr);
+    auto s = f.get_section("IniParse Defined Section");
+    s->add_entry("IniParse Defined Key", "First INI Parse Value");
+    s->add_entry("IniParse Defined Key 2", "Second INI Parse Value");
+    s->add_entry("IniParse Defined Key 3", "Third INI Parse Value");
+
+    // serialize
+    std::ofstream stream{"test/output.ini"};
+    if (stream.is_open()) {
+        stream << f;
+    }
+
     return 0;
 }

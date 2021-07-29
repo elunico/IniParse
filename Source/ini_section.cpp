@@ -10,19 +10,16 @@
 namespace tom {
 
 std::shared_ptr<ini_entry> ini_section::get_entry(std::string const& key) const {
-    for (auto& entry : entries())
-        if (entry->key() == key)
-            return entry;
-
-    return nullptr;
+    return get_or_nullptr(emap, key);
 }
 
 std::pair<std::string, bool> ini_section::get_value(std::string const& key) const {
-    for (auto& entry : entries())
-        if (entry->key() == key)
-            return std::pair<std::string, bool>{ entry->value(), true };
-
-    return std::pair<std::string, bool>{ "", false };
+    auto entry = get_entry(key);
+    if (entry == nullptr) {
+        return std::pair<std::string, bool>{ "", false };
+    } else {
+        return std::pair<std::string, bool>{ entry->value(), true };
+    }
 }
 
 bool ini_section::add_entry(std::string const& key, std::string const& value) {

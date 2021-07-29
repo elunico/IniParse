@@ -49,6 +49,14 @@ std::ostream& operator <<(std::ostream& os, ini_entry const& self);
 
 std::ostream& operator <<(std::ostream& os, ini_section const& self);
 
+template<typename T, typename K>
+T get_or_nullptr(std::unordered_map<K, T> const& map, K const& key)  noexcept {
+    if (map.find(key) == map.end()) {
+        return nullptr;
+    }
+    return map.at(key);
+}
+
 }
 
 

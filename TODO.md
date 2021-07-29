@@ -9,7 +9,7 @@
 * [x] *possibly provide a straight to entry method in `ini_file`*
 * [x] provide a method for appending `ini_entries` to a section
 * [x] provide a method for appending `ini_section` to a file
-* [ ] provide a serialization method for writing the `ini_file` out
+* [x] provide a serialization method for writing the `ini_file` out
 * [ ] move each class to its own
 
 *‡ the implementations of these methods are O(n) on the number of sections in a file
