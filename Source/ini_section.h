@@ -16,12 +16,12 @@
 
 
 namespace tom {
+
 struct ini_file;
 
 struct ini_section : std::enable_shared_from_this<ini_section> {
 private:
-    std::vector<std::shared_ptr<ini_entry>>                     entries_;
-    std::unordered_map<std::string, std::shared_ptr<ini_entry>> emap;
+    std::unordered_map<std::string, std::shared_ptr<ini_entry>> emap{};
 
 public:
     std::string                name;
@@ -30,7 +30,7 @@ public:
 
     std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
 
-    std::vector<std::shared_ptr<ini_entry>> const& entries() const noexcept;
+    std::unique_ptr<std::vector<std::shared_ptr<ini_entry>>> entries() const noexcept;
 
     // you must add entries using the add_entry method. NEVER directly manipulate the map or vector
     bool add_entry(std::string const& key, std::string const& value);
@@ -45,16 +45,14 @@ public:
     // If the key_ is not present, then value_ == "" and present == false
     std::pair<std::string, bool> get_value(std::string const& key) const;
 
+    std::string const& operator [](std::string const& key);
+
     ~ini_section();
 
     ini_section(
-        std::weak_ptr<ini_file> owner,
-        std::weak_ptr<ini_section> parent,
-        std::string name,
-        std::vector<std::shared_ptr<ini_entry>> entries
-    ) :
-
-        owner(std::move(owner)), parent(std::move(parent)), name(std::move(name)), entries_(std::move(entries)) { }
+        std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name
+    ) : owner(std::move(owner)), parent(std::move(parent)), name(std::move(name))
+    { }
 
 };
 

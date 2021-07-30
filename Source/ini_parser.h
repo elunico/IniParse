@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "ini_file.h"
 namespace  tom {
+
 class ini_parser {
     // conetent fields
     std::shared_ptr<ini_file> inifile;
@@ -83,6 +84,7 @@ public:
     // default destructor
     ~ini_parser();
 };
+
 }
 
 #endif //PARSEINI_INI_PARSER_H

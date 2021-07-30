@@ -54,6 +54,9 @@ int main() {
     s->add_entry("IniParse Defined Key 2", "Second INI Parse Value");
     s->add_entry("IniParse Defined Key 3", "Third INI Parse Value");
 
+    f.get_section("SNMP")->remove_entry("UseSNMP");
+    f.remove_section("SNMP");
+
     // serialize
     std::ofstream stream{"test/output.ini"};
     if (stream.is_open()) {

@@ -34,25 +34,37 @@ bool ini_section::add_entry(std::shared_ptr<ini_entry> const& entry) {
         result = true;
 
     emap[key] = entry;
-    entries_.push_back(entry);
+//    entries_.push_back(entry);
     return result;
 }
 
-bool ini_section::remove_entry(const std::string& key) {
-    bool v = (std::remove_if(std::begin(entries_), std::end(entries_), [key](std::shared_ptr<ini_entry> a) {
-        return a->key() == key;
-    }) != std::end(entries_));
-    v &= (emap.erase(key) >= 1);
+bool ini_section::remove_entry(std::string const& key) {
+//    auto e = (std::remove_if(std::begin(entries_), std::end(entries_), [key](std::shared_ptr<ini_entry> const& a) {
+//        return a->key() == key;
+//    }));
+//    auto v = e != std::end(entries_);
+//    assert(v);
+//    entries_.erase(e, std::end(entries_));
+    auto v = (emap.erase(key) >= 1);
     return v;
 }
 
-std::vector<std::shared_ptr<ini_entry>> const& ini_section::entries() const noexcept {
-    return entries_;
+std::string const& ini_section::operator [](const std::string& key) {
+    auto entry = get_or_nullptr(emap, key);
+    if (entry == nullptr) {
+        add_entry(key, "");
+        entry = get_or_nullptr(emap, key);
+    }
+    return entry->value();
+}
+
+std::unique_ptr<std::vector<std::shared_ptr<ini_entry>>> ini_section::entries() const noexcept {
+    auto v = new std::vector<std::shared_ptr<ini_entry>>{ };
+    std::for_each(std::begin(emap), std::end(emap), [&v] (auto a)  { v->push_back(std::get<1>(a)); });
+
+    return std::unique_ptr<std::vector<std::shared_ptr<ini_entry>>>{ v };
 }
 
 ini_section::~ini_section() = default;
-
-
-
 
 }

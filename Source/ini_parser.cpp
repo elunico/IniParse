@@ -64,8 +64,7 @@ std::shared_ptr<ini_section> ini_parser::try_consume_section() {
     content.shrink_to_fit();
     return std::make_shared<ini_section>(std::weak_ptr<ini_file>{ inifile },
                                          std::weak_ptr<ini_section>{ current_section_ },
-                                         name,
-                                         std::vector<std::shared_ptr<ini_entry>>{ });
+                                         name);
 }
 
 bool ini_parser::is_comment_char(char chr) const noexcept {
@@ -103,13 +102,6 @@ std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
     auto locale = std::locale{ };
 
     size ks = 0;
-    // drop initial whitespace
-    // might need to be removed as ini is pretty whitespace sensitive
-    // all whitepsace in a key_ is preserved.
-    //  while (std::isspace(s[ks], locale)) {
-    //    increment_pos_counts(s[ks]);
-    //    ks++;
-    //  }
 
     size ke = ks;
     // after dropping initial whitespace, consume all valid key_ chars
@@ -132,10 +124,6 @@ std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
         increment_pos_counts(s[ve]);
         ve++;
     }
-
-    // two equal signs in a line is bad
-    //  if (s[ve] == '=')
-    //    return nullptr;
 
     std::string value = s.substr(vs, ve - vs);
 
@@ -172,8 +160,7 @@ ini_file ini_parser::parse() {
             if (current_section_ == nullptr)
                 current_section_ = std::make_shared<ini_section>(std::weak_ptr<ini_file>{ inifile },
                                                                  std::weak_ptr<ini_section>{ },
-                                                                 std::string("<Default Section>"),
-                                                                 std::vector<std::shared_ptr<ini_entry>>{ });
+                                                                 std::string("<Default Section>"));
         }
 
         // try to consume an entry on the next line

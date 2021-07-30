@@ -4,6 +4,7 @@
 #include "ini_entry.h"
 
 namespace tom {
+
 std::string const& ini_entry::key() const noexcept {
     return key_;
 }

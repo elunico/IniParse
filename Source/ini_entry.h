@@ -22,9 +22,10 @@ public:
     ini_entry(std::weak_ptr<ini_section> parent, std::string key, std::string value) :
         parent(parent), key_(std::move(key)), value_(std::move(value)) { }
 
-    std::string const& key() const noexcept;
+    [[nodiscard]] std::string const& key() const noexcept;
 
-    std::string const& value() const noexcept;
+    [[nodiscard]] std::string const& value() const noexcept;
+
 
     template <typename T>
     struct adapt_to {
@@ -45,7 +46,6 @@ public:
 
     ALL_5(ini_entry, delete);
 };
-
 
 }
 #endif //PARSEINI_INI_ENTRY_H

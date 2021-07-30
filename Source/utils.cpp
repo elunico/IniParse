@@ -10,8 +10,6 @@
 
 namespace tom {
 
-
-
 std::ostream& operator <<(std::ostream& os, ini_entry const& self) {
     os << self.key() << "=" << self.value();
     return os;
@@ -19,10 +17,11 @@ std::ostream& operator <<(std::ostream& os, ini_entry const& self) {
 
 std::ostream& operator <<(std::ostream& os, ini_section const& self) {
     os << "[" << self.name << "]\n";
-    for (std::shared_ptr<ini_entry> const &entry : self.entries()) {
-//        os << "\t" << *entry << "\n";
+
+    auto const& entries = self.entries();
+
+    for (std::shared_ptr<ini_entry> const&entry : *entries)
         os << *entry << "\n";
-    }
 
     return os;
 }
