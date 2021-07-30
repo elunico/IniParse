@@ -6,11 +6,11 @@
 namespace tom {
 
 std::string const& ini_entry::key() const noexcept {
-    return key_;
+  return key_;
 }
 
 std::string const& ini_entry::value() const noexcept {
-    return value_;
+  return value_;
 }
 
-}
+}  // namespace tom

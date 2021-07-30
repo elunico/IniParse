@@ -1,18 +1,16 @@
 #ifndef PARSEINI_UTILS_H
 #define PARSEINI_UTILS_H
 
+#include <cassert>
 #include <fstream>
 #include <memory>
 #include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-#include <unordered_map>
-#include <cassert>
-#include <sstream>
-#include <utility>
 
 #define show_expr(c) \
   std::cout << "[DEBUG :" << __LINE__ << "] " #c << "=" << (c) << std::endl
@@ -24,40 +22,38 @@
   cls& operator=(cls&) = spec; \
   cls& operator=(cls&&) = spec;
 
-
 namespace tom {
 
 struct ini_entry;
 struct ini_section;
 
 static std::string readfile(std::string const& filename) {
-    std::string       line;
-    std::ifstream     myfile(filename);
-    std::stringstream text{ };
-    if (myfile.is_open()) {
-        while (getline(myfile, line))
-            text << line << '\n';
+  std::string line;
+  std::ifstream myfile(filename);
+  std::stringstream text{};
+  if (myfile.is_open()) {
+    while (getline(myfile, line))
+      text << line << '\n';
 
-        myfile.close();
-    } else {
-        abort();
-    }
-    return text.str();
+    myfile.close();
+  } else {
+    abort();
+  }
+  return text.str();
 }
 
-std::ostream& operator <<(std::ostream& os, ini_entry const& self);
+std::ostream& operator<<(std::ostream& os, ini_entry const& self);
 
-std::ostream& operator <<(std::ostream& os, ini_section const& self);
+std::ostream& operator<<(std::ostream& os, ini_section const& self);
 
-template<typename T, typename K>
-T get_or_nullptr(std::unordered_map<K, T> const& map, K const& key)  noexcept {
-    if (map.find(key) == map.end()) {
-        return nullptr;
-    }
-    return map.at(key);
+template <typename T, typename K>
+T get_or_nullptr(std::unordered_map<K, T> const& map, K const& key) noexcept {
+  if (map.find(key) == map.end()) {
+    return nullptr;
+  }
+  return map.at(key);
 }
 
-}
-
+}  // namespace tom
 
 #endif  // PARSEINI_UTILS_H
