@@ -20,8 +20,14 @@ std::ostream& operator <<(std::ostream& os, ini_section const& self) {
 
     auto const& entries = self.entries();
 
-    for (std::shared_ptr<ini_entry> const& entry : *entries)
-        os << *entry << "\n";
+    for (auto const& entry : entries) {
+        std::shared_ptr<ini_entry> const& ptr = entry.lock();
+        if (ptr == nullptr)
+            os << "std::weak_ptr<ini_entry>(nullptr)";
+        else
+            os << *ptr;
+        os << "\n";
+    }
 
     return os;
 }

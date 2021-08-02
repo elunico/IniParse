@@ -53,11 +53,11 @@ std::string const& ini_section::operator [](const std::string& key) {
     return entry->value();
 }
 
-std::vector<std::weak_ptr<ini_entry> const> const& ini_section::entries() const noexcept {
+std::vector<std::weak_ptr<ini_entry>> const& ini_section::entries() const noexcept {
     if (dirty) {
-        entry_cache = std::vector<std::weak_ptr<ini_entry> const>{ };
+        entry_cache = std::vector<std::weak_ptr<ini_entry>>{ };
         std::for_each(std::begin(emap), std::end(emap), [this](auto a) {
-            this->entry_cache.push_back(static_cast<std::weak_ptr<ini_entry> const>(std::get<1>(a)));
+            this->entry_cache.push_back(std::get<1>(a));
         });
         dirty = false;
     }

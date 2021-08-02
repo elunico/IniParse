@@ -21,7 +21,7 @@ struct ini_file;
 struct ini_section : std::enable_shared_from_this<ini_section> {
 private:
     std::unordered_map<std::string, std::shared_ptr<ini_entry>> emap{ };
-    mutable std::vector<std::weak_ptr<ini_entry> const>         entry_cache{ };
+    mutable std::vector<std::weak_ptr<ini_entry>>               entry_cache{ };
     mutable bool                                                dirty = true;
 
 public:
@@ -31,7 +31,7 @@ public:
 
     std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
 
-    std::vector<std::weak_ptr<ini_entry> const> const& entries() const noexcept;
+    std::vector<std::weak_ptr<ini_entry>> const& entries() const noexcept;
 
     // you must add entries using the add_entry method. NEVER directly manipulate
     // the map or vector
