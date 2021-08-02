@@ -20,11 +20,14 @@ struct ini_file : std::enable_shared_from_this<ini_file> {
  private:
   std::unordered_map<std::string, std::shared_ptr<ini_section>> smap{};
 
+  // used for efficient key access through file
+  mutable bool dirty = true;
+  mutable std::vector<std::weak_ptr<ini_section>> lazy_section_cache;
+
  public:
   std::string const name;
 
-  [[nodiscard]] std::unique_ptr<std::vector<std::shared_ptr<ini_section>>>
-  get_sections() const;
+  [[nodiscard]] std::vector<std::weak_ptr<ini_section>> get_sections() const;
 
   std::shared_ptr<ini_section> get_section(std::string const& name) const;
 

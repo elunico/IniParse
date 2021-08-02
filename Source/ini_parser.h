@@ -72,8 +72,7 @@ class ini_parser {
 
   bool is_key_identifier_char(char c) const noexcept;
 
-  explicit ini_parser(std::string filename,
-                      std::vector<char> comment_chars = {'#', ';'},
+  explicit ini_parser(std::string filename, std::vector<char> comment_chars = { '#', ';' },
                       char line_separator = '\n');
 
   // the main method the user of this class will call. Takes the content of the

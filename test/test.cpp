@@ -50,6 +50,10 @@ int main() {
 
   std::cout << "Value = " << port->adapt_value<int>() << std::endl;
 
+    auto const ftp_port = f.get_section("FTP")->get_entry("FTPPort")->adapt_value<short>();
+    auto const ftps = f["FTP"]["FTPPort"];
+    std::cout << "Port: " << ftp_port << std::endl;
+
   // create new values
 
   f.add_section("IniParse Defined Section", nullptr);

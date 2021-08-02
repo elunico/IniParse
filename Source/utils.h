@@ -28,30 +28,30 @@ struct ini_entry;
 struct ini_section;
 
 static std::string readfile(std::string const& filename) {
-  std::string line;
-  std::ifstream myfile(filename);
-  std::stringstream text{};
-  if (myfile.is_open()) {
-    while (getline(myfile, line))
-      text << line << '\n';
+    std::string       line;
+    std::ifstream     myfile(filename);
+    std::stringstream text{ };
+    if (myfile.is_open()) {
+        while (getline(myfile, line))
+            text << line << '\n';
 
-    myfile.close();
-  } else {
-    abort();
-  }
-  return text.str();
+        myfile.close();
+    } else {
+        abort();
+    }
+    return text.str();
 }
 
-std::ostream& operator<<(std::ostream& os, ini_entry const& self);
+std::ostream& operator <<(std::ostream& os, ini_entry const& self);
 
-std::ostream& operator<<(std::ostream& os, ini_section const& self);
+std::ostream& operator <<(std::ostream& os, ini_section const& self);
 
 template <typename T, typename K>
 T get_or_nullptr(std::unordered_map<K, T> const& map, K const& key) noexcept {
-  if (map.find(key) == map.end()) {
-    return nullptr;
-  }
-  return map.at(key);
+    if (map.find(key) == map.end()) {
+        return nullptr;
+    }
+    return map.at(key);
 }
 
 }  // namespace tom
