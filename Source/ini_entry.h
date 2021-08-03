@@ -21,9 +21,19 @@ private:
 public:
     std::weak_ptr<ini_section> parent;
 
-    ini_entry(
-        std::weak_ptr<ini_section> parent, std::string key, std::string value
-    ) : parent(parent), key_(std::move(key)), value_(std::move(value)) { }
+    bool operator ==(ini_entry const& rhs) const noexcept;
+
+    bool operator !=(ini_entry const& rhs) const noexcept;
+
+    ini_entry(ini_entry const& other);
+
+    ini_entry(ini_entry&& other) noexcept;
+
+    ini_entry& operator =(ini_entry const& other);
+
+    ini_entry& operator =(ini_entry&& other) noexcept;
+
+    ini_entry(std::weak_ptr<ini_section> parent, std::string key, std::string value);
 
     [[nodiscard]] std::string const& key() const noexcept;
 
@@ -46,7 +56,6 @@ public:
         return adapter(value_);
     }
 
-    ALL_5(ini_entry, delete);
 };
 
 }  // namespace tom
