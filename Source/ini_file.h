@@ -17,45 +17,45 @@
 namespace tom {
 
 struct ini_file : std::enable_shared_from_this<ini_file> {
- private:
-  std::unordered_map<std::string, std::shared_ptr<ini_section>> smap{};
+private:
+    std::unordered_map<std::string, std::shared_ptr<ini_section>> smap{ };
 
-  // used for efficient key access through file
-  mutable bool dirty = true;
-  mutable std::vector<std::weak_ptr<ini_section>> lazy_section_cache;
+    // used for efficient key access through file
+    mutable bool                                    dirty = true;
+    mutable std::vector<std::weak_ptr<ini_section>> lazy_section_cache;
 
- public:
-  std::string const name;
+public:
+    std::string const name;
 
-  [[nodiscard]] std::vector<std::weak_ptr<ini_section>> get_sections() const;
+    ini_file() = delete;
 
-  std::shared_ptr<ini_section> get_section(std::string const& name) const;
+    ini_file(const ini_file&) = delete;
 
-  std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
+    ini_file(ini_file&&) = default;
 
-  ini_section& operator[](std::string const& name);
+    ini_file& operator =(const ini_file&) = delete;
 
-  bool add_section(const std::string& section_name, std::string* parent_name);
+    ini_file& operator =(ini_file&&) = delete;
 
-  bool add_section(std::shared_ptr<ini_section> section);
+    explicit ini_file(std::string name_);
 
-  void remove_section(std::string const& name);
+    bool add_section(const std::string& section_name, std::string* parent_name);
 
-  friend std::ostream& operator<<(std::ostream&, ini_file const&);
+    bool add_section(std::shared_ptr<ini_section> section);
 
-  explicit ini_file(std::string name_) : name(std::move(name_)) {}
+    void remove_section(std::string const& name);
 
-  ini_file() = delete;
+    std::shared_ptr<ini_section> get_section(std::string const& name) const;
 
-  ini_file(const ini_file&) = delete;
+    [[nodiscard]] std::vector<std::weak_ptr<ini_section>> sections() const;
 
-  ini_file(ini_file&&) = default;
+    std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
 
-  ini_file& operator=(const ini_file&) = delete;
+    ini_section& operator [](std::string const& name);
 
-  ini_file& operator=(ini_file&&) = delete;
+    friend std::ostream& operator <<(std::ostream&, ini_file const&);
 
-  ~ini_file();
+    ~ini_file() = default;
 };
 
 }  // namespace tom

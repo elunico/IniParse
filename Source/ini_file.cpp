@@ -6,41 +6,7 @@
 
 namespace tom {
 
-std::vector<std::weak_ptr<ini_section>> ini_file::get_sections() const {
-    if (dirty) {
-        lazy_section_cache = std::vector<std::weak_ptr<ini_section>>();
-        std::for_each(std::cbegin(smap),
-                      std::cend(smap),
-                      [this](auto a) { lazy_section_cache.push_back(std::get<1>(a)); });
-        dirty = false;
-    }
-    return lazy_section_cache;
-}
-
-std::shared_ptr<ini_entry> ini_file::get_entry(std::string const& key) const {
-    auto ptr = get_sections();
-    for (auto& section : ptr)
-        if (auto entry = section.lock()->get_entry(key); entry != nullptr)
-            return entry;
-
-    return nullptr;
-}
-
-std::shared_ptr<ini_section> ini_file::get_section(
-    std::string const& name
-) const {
-    return get_or_nullptr(smap, name);
-}
-
-ini_file::~ini_file() = default;
-
-std::ostream& operator <<(std::ostream& os, ini_file const& self) {
-    auto sections = self.get_sections();
-    for (auto const& section : sections)
-        os << *section.lock() << "\n";
-
-    return os;
-}
+ini_file::ini_file(std::string name_) : name(std::move(name_)) { }
 
 bool ini_file::add_section(std::string const& section_name, std::string* parent_name = nullptr) {
     dirty = true;
@@ -56,6 +22,35 @@ bool ini_file::add_section(std::shared_ptr<ini_section> section) {
     return exists;
 }
 
+void ini_file::remove_section(std::string const& name) {
+    dirty = true;
+    smap.erase(name);
+}
+
+std::shared_ptr<ini_section> ini_file::get_section(std::string const& name) const {
+    return get_or_nullptr(smap, name);
+}
+
+std::vector<std::weak_ptr<ini_section>> ini_file::sections() const {
+    if (dirty) {
+        lazy_section_cache = std::vector<std::weak_ptr<ini_section>>();
+        std::for_each(std::cbegin(smap),
+                      std::cend(smap),
+                      [this](auto a) { lazy_section_cache.push_back(std::get<1>(a)); });
+        dirty = false;
+    }
+    return lazy_section_cache;
+}
+
+std::shared_ptr<ini_entry> ini_file::get_entry(std::string const& key) const {
+    auto ptr = sections();
+    for (auto& section : ptr)
+        if (auto entry = section.lock()->get_entry(key); entry != nullptr)
+            return entry;
+
+    return nullptr;
+}
+
 ini_section& ini_file::operator [](std::string const& name) {
     dirty = true;
     auto sec = get_or_nullptr(smap, name);
@@ -66,9 +61,13 @@ ini_section& ini_file::operator [](std::string const& name) {
     return *sec;
 }
 
-void ini_file::remove_section(std::string const& name) {
-    dirty = true;
-    smap.erase(name);
+std::ostream& operator <<(std::ostream& os, ini_file const& self) {
+    auto sections = self.sections();
+    for (auto const& section : sections)
+        os << *section.lock() << "\n";
+
+    return os;
+
 }
 
 }  // namespace tom

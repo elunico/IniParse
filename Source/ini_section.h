@@ -29,9 +29,14 @@ public:
     std::weak_ptr<ini_section> parent;
     std::weak_ptr<ini_file>    owner;
 
-    std::shared_ptr<ini_entry> get_entry(std::string const& key) const;
+    ini_section(ini_section const& other);
+    ini_section(ini_section&& other) noexcept;
 
-    std::vector<std::weak_ptr<ini_entry>> const& entries() const noexcept;
+    ini_section(std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name);
+
+    ini_section& operator =(ini_section const& other);
+
+    ini_section& operator =(ini_section&& other) noexcept;
 
     // you must add entries using the add_entry method. NEVER directly manipulate
     // the map or vector
@@ -43,6 +48,10 @@ public:
     // manipulate the map or vector
     bool remove_entry(std::string const& key);
 
+    std::shared_ptr<ini_entry> get_entry(std::string const& key) const noexcept;
+
+    std::vector<std::weak_ptr<ini_entry>> const& entries() const;
+
     // returns a pair of <value_, present>
     // If the key_ is present, then the second element is true
     // If the key_ is not present, then value_ == "" and present == false
@@ -51,10 +60,6 @@ public:
     std::string const& operator [](std::string const& key);
 
     ~ini_section();
-
-    ini_section(
-        std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name
-    ) : owner(std::move(owner)), parent(std::move(parent)), name(std::move(name)) { }
 };
 
 }  // namespace tom

@@ -7,17 +7,32 @@
 
 namespace tom {
 
-std::shared_ptr<ini_entry> ini_section::get_entry(std::string const& key) const {
-    return get_or_nullptr(emap, key);
+ini_section::ini_section(std::weak_ptr<ini_file> owner, std::weak_ptr<ini_section> parent, std::string name) :
+    owner(std::move(owner)), parent(std::move(parent)), name(std::move(name)) { }
+
+ini_section::ini_section(ini_section const& other) = default;
+ini_section::ini_section(ini_section&& other) noexcept = default;
+
+ini_section& ini_section::operator =(ini_section const& other) {
+    if (&other != this) {
+        name   = other.name;
+        owner  = other.owner;
+        parent = other.parent;
+        emap   = other.emap;
+        dirty  = true;
+    }
+    return *this;
 }
 
-std::pair<std::string, bool> ini_section::get_value(std::string const& key) const {
-    auto entry = get_entry(key);
-    if (entry == nullptr) {
-        return std::pair<std::string, bool>{ "", false };
-    } else {
-        return std::pair<std::string, bool>{ entry->value(), true };
+ini_section& ini_section::operator =(ini_section&& other) noexcept {
+    if (&other != this) {
+        name   = std::move(other.name);
+        owner  = std::move(other.owner);
+        parent = std::move(other.parent);
+        emap   = std::move(other.emap);
+        dirty  = true;
     }
+    return *this;
 }
 
 bool ini_section::add_entry(std::string const& key, std::string const& value) {
@@ -43,6 +58,30 @@ bool ini_section::remove_entry(std::string const& key) {
     return v;
 }
 
+std::shared_ptr<ini_entry> ini_section::get_entry(std::string const& key) const noexcept {
+    return get_or_nullptr(emap, key);
+}
+
+std::vector<std::weak_ptr<ini_entry>> const& ini_section::entries() const {
+    if (dirty) {
+        entry_cache = std::vector<std::weak_ptr<ini_entry>>{ };
+        std::for_each(std::begin(emap), std::end(emap), [this](auto a) {
+            this->entry_cache.push_back(std::get<1>(a));
+        });
+        dirty = false;
+    }
+    return entry_cache;
+}
+
+std::pair<std::string, bool> ini_section::get_value(std::string const& key) const {
+    auto entry = get_entry(key);
+    if (entry == nullptr) {
+        return std::pair<std::string, bool>{ "", false };
+    } else {
+        return std::pair<std::string, bool>{ entry->value(), true };
+    }
+}
+
 std::string const& ini_section::operator [](const std::string& key) {
     dirty = true; // unnecessary bc const ref return value
     auto entry = get_or_nullptr(emap, key);
@@ -53,16 +92,6 @@ std::string const& ini_section::operator [](const std::string& key) {
     return entry->value();
 }
 
-std::vector<std::weak_ptr<ini_entry>> const& ini_section::entries() const noexcept {
-    if (dirty) {
-        entry_cache = std::vector<std::weak_ptr<ini_entry>>{ };
-        std::for_each(std::begin(emap), std::end(emap), [this](auto a) {
-            this->entry_cache.push_back(std::get<1>(a));
-        });
-        dirty = false;
-    }
-    return entry_cache;
-}
 
 ini_section::~ini_section() = default;
 
