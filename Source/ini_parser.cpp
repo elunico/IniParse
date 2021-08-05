@@ -5,6 +5,7 @@
 #include <iostream>
 #include "ini_parser.h"
 #include "parse_error.h"
+#include "inistream.h"
 
 namespace tom {
 
