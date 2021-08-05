@@ -9,81 +9,75 @@
 #include <string>
 #include "ini_file.h"
 #include "utils.h"
+#include "parse_error.h"
+#include "inistream.h"
+#include <array>
+
 namespace tom {
 
+namespace {
+}
+
 class ini_parser {
-  // conetent fields
-  std::shared_ptr<ini_file> inifile;
-  std::string filename;
-  std::string content;
+    // conetent fields
+    std::shared_ptr<ini_file> inifile;
+    std::string               filename;
+    inistream<>               stream;
 
-  // parameterized fields
-  std::vector<char> comment_chars = {'#', ';'};
-  char line_separator = '\n';
+    // parameterized fields
+    std::vector<char> comment_chars  = {'#', ';'};
+    char              line_separator = '\n';
 
-  // position tracking
+    // implementation fields
+    std::shared_ptr<ini_section> current_section_{};
 
-  // current line starts at 1 for error message not 0
-  int current_line_ = 1;
-  int current_line_pos_ = 0;
-  int current_pos_ = 0;
+    // sets the current section to the current section's parent if it exists
+    void pop_section_();
 
-  // implementation fields
-  std::shared_ptr<ini_section> current_section_{};
+    // removes all initial whitespace from the string until the first non-space
+    // char returns the number of chars removed or 0 if none are removed
+    std::string::size_type drop_space();
 
-  // sets the current section to the current section's parent if it exists
-  void pop_section_();
+    // trys to parse out a section in the ini file. If it cannot it returns
+    // nullptr otherwise it returns a freshly new'd section
+    // this method does not change the whitespace, and a \n will still be present
+    // after it runs
+    std::shared_ptr<ini_section> try_consume_section();
 
-  // removes all initial whitespace from the string until the first non-space
-  // char returns the number of chars removed
-  std::string::size_type drop_initial_whitespace();
+    // trys to parse out a entry in the ini file. If it cannot it returns nullptr
+    // otherwise it returns a freshly new'd entry
+    // this method does not change the whitespace, and a \n will still be present
+    // after it runs
+    std::shared_ptr<ini_entry> try_consume_entry();
 
-  // trys to parse out a section in the ini file. If it cannot it returns
-  // nullptr otherwise it returns a freshly new'd section
-  // this method does not change the whitespace, and a \n will still be present
-  // after it runs
-  std::shared_ptr<ini_section> try_consume_section();
+    // trys to parse out a comment in the ini file. If it cannot it returns
+    // false otherwise if it does it returns true
+    bool try_consume_comment();
 
-  // trys to parse out a entry in the ini file. If it cannot it returns nullptr
-  // otherwise it returns a freshly new'd entry
-  // this method does not change the whitespace, and a \n will still be present
-  // after it runs
-  std::shared_ptr<ini_entry> try_consume_entry();
+    // delete all implicit constructors / operators ALL_5(ini_parser, delete);
 
-  // trys to parse out a comment in the ini file. If it cannot it returns
-  // false otherwise if it does it returns true
-  bool try_consume_comment();
+public:
+    bool is_comment_char(char chr) const noexcept;
 
-  // erases all whitespace until and including the next \n char, and returns the
-  // count of chars removed
-  std::string::size_type drop_to_newline();
+    bool is_value_identifier_char(char c) const noexcept;
 
-  // Increments the position counters for line and chars. Should be called each
-  // time the parser advances through the content
-  template <typename ch>
-  void increment_pos_counts(ch n);
+    bool is_key_identifier_char(char c) const noexcept;
 
-  // delete all implicit constructors / operators ALL_5(ini_parser, delete);
+    explicit ini_parser(
+        std::string const& filename, std::vector<char> comment_chars = {'#', ';'}, char line_separator = '\n'
+    );
 
- public:
-  bool is_comment_char(char chr) const noexcept;
+    // the main method the user of this class will call. Takes the content of the
+    // file and parses it into the ini_file data structure
+    ini_file parse();
 
-  bool is_value_identifier_char(char c) const noexcept;
+    // accessor method for the filename field
+    [[nodiscard]] std::string const& get_filename() const noexcept;
 
-  bool is_key_identifier_char(char c) const noexcept;
+    // default destructor
+    ~ini_parser();
 
-  explicit ini_parser(std::string filename, std::vector<char> comment_chars = { '#', ';' },
-                      char line_separator = '\n');
-
-  // the main method the user of this class will call. Takes the content of the
-  // file and parses it into the ini_file data structure
-  ini_file parse();
-
-  // accessor method for the filename field
-  [[nodiscard]] std::string const& get_filename() const noexcept;
-
-  // default destructor
-  ~ini_parser();
+    std::string current_pos_s() const;
 };
 
 }  // namespace tom

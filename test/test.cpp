@@ -7,6 +7,7 @@
 #include "../Source/ini_file.h"
 #include "../Source/ini_parser.h"
 #include "../Source/utils.h"
+#include <type_traits>
 
 namespace {
 inline std::string quote(std::string const& s) {
@@ -62,12 +63,12 @@ int main(int argc, char const* argv[]) {
     f.remove_section("SNMP");
 
     // serialize
-    std::ofstream stream{ "test/output.ini" };
+    std::ofstream stream{"test/output.ini"};
     if (stream.is_open()) {
         stream << f;
     }
 
-    std::vector<std::weak_ptr<tom::ini_entry>> entries{};
+    std::vector<std::weak_ptr<tom::ini_entry>> entries;
     // create a list
     {
         // create a section

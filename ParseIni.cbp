@@ -126,6 +126,14 @@
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
 		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/parse_error.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/parse_error.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/utils.cpp">
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
