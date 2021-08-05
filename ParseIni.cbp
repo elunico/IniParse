@@ -94,14 +94,6 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/illegal_state.cpp">
-			<Option target="parsetest"/>
-			<Option target="ParseIni"/>
-		</Unit>
-		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/illegal_state.h">
-			<Option target="parsetest"/>
-			<Option target="ParseIni"/>
-		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_entry.cpp">
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
@@ -131,6 +123,14 @@
 			<Option target="ParseIni"/>
 		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_section.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/parse_error.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/parse_error.h">
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
 		</Unit>

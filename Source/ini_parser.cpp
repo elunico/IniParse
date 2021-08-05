@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "ini_parser.h"
-#include "illegal_state.h"
+#include "parse_error.h"
 
 namespace tom {
 
@@ -39,13 +39,13 @@ std::shared_ptr<ini_section> ini_parser::try_consume_section() {
 
     char        c;
     std::string name{};
-    while ((c = stream.consume()) != ']') {
+    while ((c = stream.consume()) != ']')
         name.push_back(c);
-    }
 
-    if (name.empty()) {
-        throw tom::illegal_state("Cannot have section with empty name: " + current_pos_s());
-    }
+
+    if (name.empty())
+        throw tom::empty_section_name("Cannot have section with empty name: " + current_pos_s());
+
 
     return std::make_shared<ini_section>(std::weak_ptr<ini_file>{inifile},
                                          std::weak_ptr<ini_section>{current_section_},
@@ -153,7 +153,7 @@ ini_file ini_parser::parse() {
         }
 
         std::string s = current_pos_s();
-        throw std::invalid_argument(s);
+        throw tom::parse_error(s);
     }
 
     inifile->add_section(current_section_);

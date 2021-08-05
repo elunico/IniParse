@@ -9,7 +9,7 @@
 #include <string>
 #include "ini_file.h"
 #include "utils.h"
-#include "illegal_state.h"
+#include "parse_error.h"
 #include <array>
 
 namespace tom {

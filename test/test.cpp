@@ -16,7 +16,7 @@ inline std::string quote(std::string const& s) {
 }  // namespace
 
 int main() {
-    tom::ini_parser parser{ "test/test.ini" };
+    tom::ini_parser parser{"test/test.ini"};
 
     tom::ini_file f = parser.parse();
 
@@ -63,12 +63,12 @@ int main() {
     f.remove_section("SNMP");
 
     // serialize
-    std::ofstream stream{ "test/output.ini" };
+    std::ofstream stream{"test/output.ini"};
     if (stream.is_open()) {
         stream << f;
     }
 
-    std::vector<std::weak_ptr<tom::ini_entry>> entries{ };
+    std::vector<std::weak_ptr<tom::ini_entry>> entries;
     // create a list
     {
         // create a section
