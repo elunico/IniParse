@@ -14,8 +14,8 @@ inline std::string quote(std::string const& s) {
 }
 }  // namespace
 
-int main() {
-    tom::ini_parser parser{ "test/test.ini" };
+int main(int argc, char const* argv[]) {
+    tom::ini_parser parser{argv[1]};
 
     tom::ini_file f = parser.parse();
 
