@@ -2,7 +2,9 @@
 // Created by Thomas Povinelli on 7/28/21.
 //
 
+#include <iostream>
 #include "ini_parser.h"
+#include "illegal_state.h"
 
 namespace tom {
 
@@ -17,50 +19,48 @@ void ini_parser::pop_section_() {
         current_section_ = current_section_->parent.lock();
 }
 
-std::string::size_type ini_parser::drop_initial_whitespace() {
-    std::string::size_type n = 0;
-    const std::locale& locale = std::locale{ };
-    while (std::isspace(content[n], locale)) {
-        increment_pos_counts(content[n]);
+std::size_t ini_parser::drop_space() {
+    const std::locale& locale = std::locale();
+    std::size_t n = 0;
+    char        c;
+
+    while (std::isspace(stream.peek(), locale)) {
+        increment_pos_counts(c);
+        c = stream.consume();
         n++;
     }
-    content.erase(0, n);
     return n;
 }
 
 template <typename ch>
 void ini_parser::increment_pos_counts(ch c) {
     current_pos_++;
-    if (c == '\n') {
+    if (c == line_separator) {
         current_line_++;
         current_line_pos_ = 0;
     }
 }
 
-std::string::size_type ini_parser::drop_to_newline() {
-    std::string::size_type n = 0;
-    while (std::isspace(content[n], std::locale{ })) {
-        increment_pos_counts(content[n]);
-        n++;
-    }
-    content.erase(0, n);
-    return n;
-}
-
 std::shared_ptr<ini_section> ini_parser::try_consume_section() {
-    if (content[0] != '[')
+    if (stream.peek() != '[')
         return nullptr;
 
-    std::string::size_type n = 0;
-    while (content[n] != ']') {
-        increment_pos_counts(content[n]);
-        n++;
+    assert(stream.consume() == '[');
+
+    char        c;
+    std::string name{};
+    while (stream.peek() != ']') {
+        c = stream.consume();
+        name.push_back(c);
+        increment_pos_counts(c);
     }
 
-    std::string name = content.substr(1, n - 1);
-    content.erase(0, n + 1);
-    return std::make_shared<ini_section>(std::weak_ptr<ini_file>{ inifile },
-                                         std::weak_ptr<ini_section>{ current_section_ },
+    if (name.empty()) {
+        throw tom::illegal_state("Cannot have section with empty name: " + current_pos_s());
+    }
+
+    return std::make_shared<ini_section>(std::weak_ptr<ini_file>{inifile},
+                                         std::weak_ptr<ini_section>{current_section_},
                                          name);
 }
 
@@ -77,69 +77,60 @@ bool ini_parser::is_key_identifier_char(char c) const noexcept {
 }
 
 bool ini_parser::try_consume_comment() {
-    drop_initial_whitespace();
-    // spleef whitespace will erase all the leading whitespace
-    if (!is_comment_char(content[0]))
-        return false;
+    drop_space();
 
-    std::string::size_type n = 0;
-    while (content[n] != '\n') {
-        increment_pos_counts(content[n]);
-        n++;
+    if (!is_comment_char(stream.peek())) {
+        return false;
     }
 
-    content.erase(0, n);
+    char c;
+    while (stream.peek() != '\n') {
+        c = stream.consume();
+        increment_pos_counts(c);
+    }
+
     return true;
 }
 
 std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
-    auto& s = content;
-    using size = std::string::size_type;
-    auto locale = std::locale{ };
+    std::string key{};
+    std::string value{};
+    char        c;
 
-    size ks = 0;
-
-    size ke = ks;
     // after dropping initial whitespace, consume all valid key_ chars
-    while (is_key_identifier_char(s[ke])) {
-        increment_pos_counts(content[ke]);
-        ke++;
+    while (is_key_identifier_char(stream.peek())) {
+        c = stream.consume();
+        increment_pos_counts(c);
+        key.push_back(c);
     }
-
-    std::string key = s.substr(ks, ke - ks);
 
     // If we reach the end of an identifier and don't find an equals, we have a
     // malformed line key_ with no value_
-    if (s[ke] != '=')
+    if (stream.peek() != '=')
         return nullptr;
 
-    // repeat the process for the value_, but do not drop initial whitespace
-    size vs = ke + 1;
-    size ve = vs;
-    while (is_value_identifier_char(s[ve])) {
-        increment_pos_counts(s[ve]);
-        ve++;
-    }
+    stream.consume(); // discard equals sign
 
-    std::string value = s.substr(vs, ve - vs);
+    // repeat the process for the value_, but do not drop initial whitespace
+    while (is_value_identifier_char(stream.peek())) {
+        c = stream.consume();
+        increment_pos_counts(c);
+        value.push_back(c);
+    }
 
     // cut the string to the new line so we can start fresh with the next line
-    size eat = ve;
-    while (eat < s.size() && s[eat] != '\n') {
-        increment_pos_counts(s[eat]);
-        eat++;
+    while (stream.peek() != '\n') {
+        increment_pos_counts(c);
+        stream.consume();
     }
 
-    s.erase(0, eat);
-    return std::make_shared<ini_entry>(std::weak_ptr<ini_section>{ current_section_ }, key, value);
+    return std::make_shared<ini_entry>(std::weak_ptr<ini_section>{current_section_}, key, value);
 }
 
 ini_file ini_parser::parse() {
-    while (!content.empty()) {
-        // clear initial whitespace
-        drop_initial_whitespace();
+    while (!stream.eof()) {
+        drop_space();
 
-        // look for a section
         auto sec = try_consume_section();
 
         if (sec != nullptr) {
@@ -148,35 +139,39 @@ ini_file ini_parser::parse() {
 
             current_section_ = std::shared_ptr<ini_section>(sec);
 
-            // drop the rest of the line
-            drop_to_newline();
+            drop_space();
             continue;
         } else {
             if (current_section_ == nullptr)
-                current_section_ = std::make_shared<ini_section>(std::weak_ptr<ini_file>{ inifile },
-                                                                 std::weak_ptr<ini_section>{ },
+                current_section_ = std::make_shared<ini_section>(std::weak_ptr<ini_file>{inifile},
+                                                                 std::weak_ptr<ini_section>{},
                                                                  std::string("<Default Section>"));
         }
 
-        // try to consume an entry on the next line
-        auto entry = try_consume_entry();
-        if (entry != nullptr) {
-            current_section_->add_entry(std::shared_ptr<ini_entry>{ entry });
-            drop_to_newline();
-            continue;
-        }
-
-        // if the entry fails to parse try to consume a comment
+        // consume comment first to check for # at line
         bool i = try_consume_comment();
         if (i) {
-            drop_to_newline();
+            drop_space();
             continue;
         }
 
-        std::stringstream s;
-        s << "INI Parsing of " << get_filename() << " has failed at line: " << current_line_ << ", col: "
-          << current_line_pos_ << " (" << current_pos_ << ")";
-        throw std::invalid_argument(s.str());
+        auto entry = try_consume_entry();
+
+        if (entry != nullptr) {
+            current_section_->add_entry(std::shared_ptr<ini_entry>(entry));
+            drop_space();
+            continue;
+        }
+
+        // consume comment again to see if line ends with a comment
+        i = try_consume_comment();
+        if (i) {
+            drop_space();
+            continue;
+        }
+
+        std::string s = current_pos_s();
+        throw std::invalid_argument(s);
     }
 
     inifile->add_section(current_section_);
@@ -184,14 +179,18 @@ ini_file ini_parser::parse() {
     return std::move(*inifile);
 }
 
-ini_parser::ini_parser(
-    std::string filename, std::vector<char> comment_chars, char line_separator
-) :
-    inifile(std::make_unique<ini_file>(filename)),
-    filename(std::move(filename)),
-    comment_chars(std::move(comment_chars)),
-    line_separator(line_separator) {
-    content = readfile(this->filename);
+std::string ini_parser::current_pos_s() const {
+    std::stringstream s;
+    s << "INI Parsing of " << get_filename() << " has failed at line: " << current_line_ << ", col: "
+      << current_line_pos_ << " (" << current_pos_ << ")";
+    return s.str();
 }
+
+ini_parser::ini_parser(std::string const& filename, std::vector<char> comment_chars, char line_separator) :
+    inifile(std::make_unique<ini_file>(filename)),
+    filename(filename),
+    stream(inistream{filename}),
+    comment_chars(std::move(comment_chars)),
+    line_separator(line_separator) { }
 
 }  // namespace tom

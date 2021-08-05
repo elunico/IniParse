@@ -7,6 +7,7 @@
 #include "../Source/ini_file.h"
 #include "../Source/ini_parser.h"
 #include "../Source/utils.h"
+#include <type_traits>
 
 namespace {
 inline std::string quote(std::string const& s) {
@@ -67,7 +68,7 @@ int main() {
         stream << f;
     }
 
-    std::vector<std::weak_ptr<tom::ini_entry>> entries{};
+    std::vector<std::weak_ptr<tom::ini_entry>> entries{ };
     // create a list
     {
         // create a section

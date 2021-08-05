@@ -94,6 +94,14 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/illegal_state.cpp">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
+		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/illegal_state.h">
+			<Option target="parsetest"/>
+			<Option target="ParseIni"/>
+		</Unit>
 		<Unit filename="/Users/thomaspovinelli/CLionProjects/ParseIni/Source/ini_entry.cpp">
 			<Option target="parsetest"/>
 			<Option target="ParseIni"/>
