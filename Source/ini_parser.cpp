@@ -22,37 +22,25 @@ void ini_parser::pop_section_() {
 std::size_t ini_parser::drop_space() {
     const std::locale& locale = std::locale();
     std::size_t n = 0;
-    char        c;
 
     while (std::isspace(stream.peek(), locale)) {
-        increment_pos_counts(c);
-        c = stream.consume();
+        stream.consume();
         n++;
     }
     return n;
 }
 
-template <typename ch>
-void ini_parser::increment_pos_counts(ch c) {
-    current_pos_++;
-    if (c == line_separator) {
-        current_line_++;
-        current_line_pos_ = 0;
-    }
-}
 
 std::shared_ptr<ini_section> ini_parser::try_consume_section() {
     if (stream.peek() != '[')
         return nullptr;
 
-    assert(stream.consume() == '[');
+    stream.consume(); // discard the opening [ section marker
 
     char        c;
     std::string name{};
-    while (stream.peek() != ']') {
-        c = stream.consume();
+    while ((c = stream.consume()) != ']') {
         name.push_back(c);
-        increment_pos_counts(c);
     }
 
     if (name.empty()) {
@@ -83,11 +71,8 @@ bool ini_parser::try_consume_comment() {
         return false;
     }
 
-    char c;
-    while (stream.peek() != '\n') {
-        c = stream.consume();
-        increment_pos_counts(c);
-    }
+    while (stream.peek() != line_separator)
+        stream.consume();
 
     return true;
 }
@@ -100,7 +85,6 @@ std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
     // after dropping initial whitespace, consume all valid key_ chars
     while (is_key_identifier_char(stream.peek())) {
         c = stream.consume();
-        increment_pos_counts(c);
         key.push_back(c);
     }
 
@@ -114,15 +98,13 @@ std::shared_ptr<ini_entry> ini_parser::try_consume_entry() {
     // repeat the process for the value_, but do not drop initial whitespace
     while (is_value_identifier_char(stream.peek())) {
         c = stream.consume();
-        increment_pos_counts(c);
         value.push_back(c);
     }
 
     // cut the string to the new line so we can start fresh with the next line
-    while (stream.peek() != '\n') {
-        increment_pos_counts(c);
+    while (stream.peek() != line_separator)
         stream.consume();
-    }
+
 
     return std::make_shared<ini_entry>(std::weak_ptr<ini_section>{current_section_}, key, value);
 }
@@ -180,9 +162,10 @@ ini_file ini_parser::parse() {
 }
 
 std::string ini_parser::current_pos_s() const {
-    std::stringstream s;
-    s << "INI Parsing of " << get_filename() << " has failed at line: " << current_line_ << ", col: "
-      << current_line_pos_ << " (" << current_pos_ << ")";
+    std::stringstream s{};
+    auto const [cpos, cline, cline_pos] = stream.position();
+    s << "INI Parsing of " << get_filename() << " has failed at line: " << cline << ", col: "
+      << cline_pos << " (" << cpos << ")";
     return s.str();
 }
 
