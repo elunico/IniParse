@@ -12,25 +12,11 @@
 
 namespace tom {
 
-template <typename T>
-constexpr bool is_pow_2(T n) {
-    size_t cnt = 0;
-    while (n) {
-        cnt += (n & 1);
-        n >>= 1;
-    }
-    return cnt == 1;
-}
-
 template <typename char_type = char, size_t buffer_size = 512>
 class inistream {
-    static_assert(is_pow_2(buffer_size), "buffer_size must be a power of 2");
-
     [[maybe_unused]] std::string                           filename;
     std::ifstream                                          input;
-    // todo: always allocate in class, allows user to decide to call new and do auto vs heap allocation?
-    //    std::array<char_type, buffer_size>                     buf;
-    std::unique_ptr<char_type[]>                           buf = std::make_unique<char_type[]>(buffer_size);
+    std::array<char_type, buffer_size>                     buf;
     typename std::array<char_type, buffer_size>::size_type idx = 0;
     typename std::array<char_type, buffer_size>::size_type max = buffer_size;
 
@@ -45,7 +31,7 @@ class inistream {
     int current_pos_      = 0;
 
     void read_data() {
-        input.read(buf.get(), buffer_size);
+        input.read(buf.data(), buffer_size);
         max = input.gcount();
         idx = 0;
     }

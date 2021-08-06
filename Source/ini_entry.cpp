@@ -33,6 +33,10 @@ bool ini_entry::operator ==(ini_entry const& rhs) const noexcept {
     return key_ == rhs.key_ && value_ == rhs.value_;
 }
 
+ini_entry::operator std::tuple<std::string, std::string>() const {
+    return std::tie(key_, value_);
+}
+
 bool ini_entry::operator !=(ini_entry const& rhs) const noexcept { return !(*this == rhs); }
 
 std::string const& ini_entry::key() const noexcept {
@@ -42,5 +46,6 @@ std::string const& ini_entry::key() const noexcept {
 std::string const& ini_entry::value() const noexcept {
     return value_;
 }
+
 
 }  // namespace tom

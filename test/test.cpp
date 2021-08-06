@@ -37,6 +37,7 @@ int main(int argc, char const* argv[]) {
     std::cout << "FTPDir is equal to \"" << std::get<0>(section->get_value("FTPDir")) << "\"\n";
 
     auto entry = f.get_entry("PrimaryIP");
+
     assert(entry->key() == "PrimaryIP");
     assert(entry->value() == "192.168.0.13");
     show_expr(entry->parent.lock()->name);

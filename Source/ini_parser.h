@@ -54,7 +54,7 @@ class ini_parser {
     // false otherwise if it does it returns true
     bool try_consume_comment();
 
-    // delete all implicit constructors / operators ALL_5(ini_parser, delete);
+    std::string current_pos_s() const;
 
 public:
     bool is_comment_char(char chr) const noexcept;
@@ -77,7 +77,6 @@ public:
     // default destructor
     ~ini_parser();
 
-    std::string current_pos_s() const;
 };
 
 }  // namespace tom

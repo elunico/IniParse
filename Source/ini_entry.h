@@ -56,6 +56,7 @@ public:
         return adapter(value_);
     }
 
+    operator std::tuple<std::string, std::string>() const;
 };
 
 }  // namespace tom
